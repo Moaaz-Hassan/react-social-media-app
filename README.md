@@ -140,7 +140,7 @@ Comments are dynamically fetched and updated in real-time after any create, upda
 
 
 ## Live Demo
-<a href="https://your-live-demo-link.com" target="_blank">🌐 Live Demo</a>
+<a href="https://react-social-media-app-beta.vercel.app/" target="_blank">🌐 Live Demo</a>
 
 
 

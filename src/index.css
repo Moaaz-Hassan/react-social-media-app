@@ -1,0 +1,39 @@
+@import "tailwindcss" ;
+@plugin './hero.js';
+
+@source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+
+
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 80px;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.navbar.hide {
+  transform: translateY(-100%);
+}
+
+.navbar.show {
+  transform: translateY(0);
+}
+
+
+.ping{
+  animation-name:ping ;
+  animation-duration: 3s;
+  animation-timing-function: ease-in;
+}
+
+@keyframes ping{
+  from{
+    transform: scale(1)
+  }to{
+    transform: scale(3)
+  }
+}
+

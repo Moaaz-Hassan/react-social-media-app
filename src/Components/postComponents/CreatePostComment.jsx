@@ -1,5 +1,5 @@
 import React from "react";
-import Placeholder from "../../assets/62010d848b790a2336d1542fcda51789.jpg";
+import Placeholder from "../../assets/Avatar.jpg";
 import { timeAgo } from "../../Services/timeFormat";
 import CommentLoadingScrean from "../CommentLoadingScrean";
 

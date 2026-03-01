@@ -37,8 +37,8 @@ function LoginPage() {
         setApiErorre(response.error);
         return ;
       } else {
-        localStorage.setItem("token", response.token);
-        setIsLogedIn(response.token);
+        localStorage.setItem("token",response.data.token);
+        setIsLogedIn(response.data.token);
         navigate("/");
       }
     } catch (error) {

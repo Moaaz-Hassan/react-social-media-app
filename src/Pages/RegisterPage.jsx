@@ -1,4 +1,3 @@
-import React from "react";
 import { registerSchema } from "../schemaValidation/registerValidation";
 import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/react";
@@ -6,13 +5,15 @@ import { Button } from "@heroui/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { sendRegisterData } from "../Services/sendRegisterData";
+import AuthenticationCntext from "../Context/AuthenticationCntext";
 
 function RegisterPage() {
   const [apiError, setApiError] = useState(null);
-  const [apiSuccess, setApiSuccess] = useState(null);
   const [loding, setLoding] = useState(false);
+
+  const { setIsLogedIn } = useContext(AuthenticationCntext);
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isRePasswordVisible, setIsRePasswordVisible] = useState(false);
@@ -26,34 +27,40 @@ function RegisterPage() {
   const { handleSubmit, register, formState } = useForm({
     defaultValues: {
       name: "",
+      username: "",
       email: "",
-      password: "",
-      rePassword: "",
       dateOfBirth: "",
       gender: "",
+      password: "",
+      rePassword: "",
     },
+
     resolver: zodResolver(registerSchema),
   });
 
   async function signUp(value) {
+    const formattedData = {
+      ...value,
+      dateOfBirth: value.dateOfBirth.toISOString().split("T")[0],
+    };
+
     setLoding(true);
     setApiError(null);
-    setApiSuccess(null);
 
     try {
-      const response = await sendRegisterData(value);
+      const response = await sendRegisterData(formattedData);
+      console.log(response);
 
-      if (response?.error) {
-        setApiError(response.error);
+      if (response.success) {
+        localStorage.setItem("token", response.data.token);
+        setIsLogedIn(response.data.token);
+        navigate("/");
+      } else {
+        setApiError(response.message);
         return;
       }
-
-      setApiSuccess(response.message);
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
     } catch (error) {
+      console.log(error);
       setApiError("Something went wrong. Please try again later.");
     } finally {
       setLoding(false);
@@ -71,9 +78,20 @@ function RegisterPage() {
             label="name"
             type="text"
             labelPlacement="outside"
-            placeholder="Enter your Name"
+            placeholder="Enter your Full Name"
             isInvalid={formState.errors.name?.message ? true : false}
             errorMessage={formState.errors.name?.message}
+          />
+
+          <Input
+            variant="bordered"
+            {...register("username")}
+            label="username"
+            type="text"
+            labelPlacement="outside"
+            placeholder="Enter your Name (@)"
+            isInvalid={formState.errors.username?.message ? true : false}
+            errorMessage={formState.errors.username?.message}
           />
 
           <Input
@@ -209,6 +227,7 @@ function RegisterPage() {
               isInvalid={formState.errors.dateOfBirth?.message ? true : false}
               errorMessage={formState.errors.dateOfBirth?.message}
             />
+
             <Select
               labelPlacement="outside-top"
               {...register("gender")}
@@ -225,12 +244,7 @@ function RegisterPage() {
           </div>
 
           {apiError && <p className=" text-red-500">{apiError}</p>}
-          {apiSuccess && (
-            <Link
-              to={"/login"}
-              className=" text-green-500"
-            >{`${apiSuccess} , Let's  sign in`}</Link>
-          )}
+
           <Button isLoading={loding} type="submit" color="primary">
             Register
           </Button>

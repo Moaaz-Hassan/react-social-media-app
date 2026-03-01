@@ -6,7 +6,7 @@ import CreatPostCard from "../Components/postComponents/CreatePostCard";
 import PostForm from "../Components/postComponents/PostForm";
 import { uploadProfilePhoto } from "../Services/userprofile";
 import { getLogedUserData } from "../Services/loginServices";
-import Placeholder from "../assets/62010d848b790a2336d1542fcda51789.jpg";
+import Placeholder from  "../assets/default-profile.png";
 import { Link } from "react-router-dom";
 import PostLoadingScrean from "../Components/PostLoadingScrean";
 import { queryClient } from "../App";

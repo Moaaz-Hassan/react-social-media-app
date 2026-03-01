@@ -1,16 +1,91 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Textarea, Button } from "@heroui/react";
 import { createPostApi } from "../../Services/postServices";
 import { updatePostApi } from "../../Services/postServices";
 import { queryClient } from "../../App";
+import AuthenticationCntext from "../../Context/AuthenticationCntext";
+import defaultPersonPhoto from "../../assets/default-profile.png";
+import { useNavigate } from "react-router-dom";
+import { Select, SelectItem } from "@heroui/react";
+import EmojiPicker from "emoji-picker-react";
+import { Alert } from "@heroui/react";
 
-function PostForm({ postForUpdating , queryKey }) {
+const follwingicons = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="size-5"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
+    />
+  </svg>
+);
+const publicicons = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="size-5"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 0 1-1.161.886l-.143.048a1.107 1.107 0 0 0-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 0 1-1.652.928l-.679-.906a1.125 1.125 0 0 0-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 0 0-8.862 12.872M12.75 3.031a9 9 0 0 1 6.69 14.036m0 0-.177-.529A2.25 2.25 0 0 0 17.128 15H16.5l-.324-.324a1.453 1.453 0 0 0-2.328.377l-.036.073a1.586 1.586 0 0 1-.982.816l-.99.282c-.55.157-.894.702-.8 1.267l.073.438c.08.474.49.821.97.821.846 0 1.598.542 1.865 1.345l.215.643m5.276-3.67a9.012 9.012 0 0 1-5.276 3.67m0 0a9 9 0 0 1-10.275-4.835M15.75 9c0 .896-.393 1.7-1.016 2.25"
+    />
+  </svg>
+);
+const onlyMeicons = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="size-5"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+    />
+  </svg>
+);
+
+function SelectedPrivacyIcone(privacy) {
+  if (privacy === "public") {
+    return publicicons;
+  } else if (privacy === "following") {
+    return follwingicons;
+  } else {
+    return onlyMeicons;
+  }
+}
+
+function PostForm({ postForUpdating, queryKey }) {
+  // post states
   const [body, setBody] = useState("");
   const [image, setimage] = useState(null);
+  const [privacy, setPrivacy] = useState("public");
+
+  const [openEmojiForm, setOpenEmojiForm] = useState(false);
+  const [PostErorre, setPostErorre] = useState(false);
+
   const [loding, setLodeng] = useState(false);
   const [imageUrl, setimageUrl] = useState(null);
   const [update, setupdate] = useState(false);
   const [idForUpdate, setIdForUpdate] = useState(false);
+
+  const navigate = useNavigate();
+
+  let { userData } = useContext(AuthenticationCntext);
 
   function handelImage(e) {
     setimage(e.target.files[0]);
@@ -32,17 +107,20 @@ function PostForm({ postForUpdating , queryKey }) {
     const formData = new FormData();
     body?.trim() && formData.append("body", body);
     image && formData.append("image", image);
+    privacy && formData.append("privacy", privacy);
 
     let response = "";
     if (body?.trim() || image) {
       response = await createPostApi(formData);
     }
 
-    if (response.message == "success") {
-      await queryClient.invalidateQueries([queryKey]);
+    if (response.success) {
       setBody("");
       setimageUrl(null);
       setimage(null);
+      setOpenEmojiForm(false);
+    } else {
+      console.log("som this went roung");
     }
 
     setLodeng(false);
@@ -66,6 +144,8 @@ function PostForm({ postForUpdating , queryKey }) {
       setBody("");
       setimageUrl(null);
       setimage(null);
+    } else {
+      setPostErorre(true);
     }
 
     setLodeng(false);
@@ -81,11 +161,66 @@ function PostForm({ postForUpdating , queryKey }) {
     }
   }, [postForUpdating]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setPostErorre(false);
+    }, 3000);
+  }, [PostErorre]);
+
   return (
-    <div className="bg-white w-full rounded-md shadow-md  h-auto p-4 my-2">
+    <div className="bg-white w-full rounded-xl shadow-md border-1 border-blue-50  h-auto p-4 my-2">
+      {PostErorre && (
+        <div className=" fixed top-2 z-50 left-[50%] -translate-x-[50%]">
+          <Alert
+            variant="flat"
+            color="danger"
+            description={"Something went wrong, please try again later"}
+            title={"We're sorry " + userData?.name}
+          />
+        </div>
+      )}
+
       <form onSubmit={update ? updateYourPost : createPost}>
+        <div className=" flex items-center gap-2 mb-3">
+          <img
+            src={userData?.photo ? userData?.photo : defaultPersonPhoto}
+            className=" w-12 h-12 rounded-full cursor-pointer "
+            alt="person-photo"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate("/profile");
+            }}
+          />
+          <div>
+            <h2 className="text-gray-950 font-bold text-medium ">
+              {userData?.name}
+            </h2>
+
+            <Select
+              aria-label="Post Privacy"
+              className="w-40 border-1 border-blue-50 rounded-2xl"
+              selectedKeys={[privacy]}  
+              onChange={(e) => setPrivacy(e.target.value)}
+              startContent={SelectedPrivacyIcone(privacy)}
+              radius="lg"
+              size="sm"
+            >
+              <SelectItem startContent={publicicons} key={"public"}>
+                Public
+              </SelectItem>
+              <SelectItem startContent={follwingicons} key={"following"}>
+                Followers
+              </SelectItem>
+              <SelectItem startContent={onlyMeicons} key={"only_me"}>
+                Only me
+              </SelectItem>
+            </Select>
+          </div>
+        </div>
+
         <Textarea
           value={body}
+          className=" border-1 border-blue-50 rounded-2xl"
           onChange={(e) => {
             setBody(e.target.value);
           }}
@@ -93,15 +228,15 @@ function PostForm({ postForUpdating , queryKey }) {
         ></Textarea>
 
         {imageUrl && (
-          <div className=" relative">
+          <div className=" relative mt-4  w-fit ">
             <img
-              className=" w-full h-auto rounded-b-md"
+              className="w-60 h-60 object-contain rounded-md"
               src={imageUrl}
               alt=""
             />
             <svg
               onClick={removeImage}
-              className=" absolute top-4 end-4 size-8 cursor-pointer active:text-gray-400  text-white font-bold"
+              className=" absolute top-2 end-2 size-8 cursor-pointer active:text-gray-400  text-white font-bold"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -117,37 +252,101 @@ function PostForm({ postForUpdating , queryKey }) {
           </div>
         )}
 
-        <div className="flex justify-between mt-3 items-center">
-          <label
-            htmlFor="file"
-            className={`${image ? "text-blue-700 " : ""}cursor-pointer flex gap-1 hover:text-blue-700`}
+        <div className="flex justify-between mt-6 items-center border-t-1 border-gray-950 pt-3">
+          <div className=" flex items-center gap-5">
+            <label
+              htmlFor="file"
+              className={`cursor-pointer flex gap-1   items-center`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6 text-green-700"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                />
+              </svg>
+
+              <span className=" text-sm font-bold text-gray-700">Photo</span>
+            </label>
+            <input
+              onChange={handelImage}
+              id="file"
+              className=" border-1 hidden"
+              type="file"
+            />
+
+            <div className="relative flex items-center gap-1">
+              <div
+                onClick={() => setOpenEmojiForm(!openEmojiForm)}
+                className="cursor-pointer flex items-center gap-1"
+              >
+                {/* icon */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6 text-yellow-600"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z"
+                  />
+                </svg>
+
+                <span className="text-sm font-bold text-gray-800">
+                  Feeling/activity
+                </span>
+              </div>
+
+              {openEmojiForm && (
+                <div className="absolute top-7 left-0 z-50 shadow-lg">
+                  <EmojiPicker
+                    emojiStyle="google"
+                    width={300}
+                    height={350}
+                    onEmojiClick={(emojiObject) =>
+                      setBody((prev) => prev + emojiObject.emoji)
+                    }
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <Button
+            color="primary"
+            size="md"
+            radius="md"
+            disabled={!(body || image)}
+            isLoading={loding}
+            type="submit"
+            className=" font-bold"
           >
+            {update ? "update" : "Post"}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="size-6"
+              className="size-5"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
               />
             </svg>
-
-            <span>image</span>
-          </label>
-          <input
-            onChange={handelImage}
-            id="file"
-            className=" border-1 hidden"
-            type="file"
-          />
-
-          <Button disabled={!(body || image)} isLoading={loding} type="submit">
-            {update ? "update" : "Post"}
           </Button>
         </div>
       </form>

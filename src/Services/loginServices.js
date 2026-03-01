@@ -3,7 +3,7 @@ import axios from "axios";
 export async function sendLogInData(values) {
   try {
     const { data } = await axios.post(
-      "https://linked-posts.routemisr.com/users/signin",
+      "https://route-posts.routemisr.com/users/signin",
       values,
     );
     return data;
@@ -15,8 +15,10 @@ export async function sendLogInData(values) {
 export async function getLogedUserData() {
   try {
     const { data } = await axios.get(
-      "https://linked-posts.routemisr.com/users/profile-data",
-      { headers: { token: localStorage.getItem("token") } },
+      "https://route-posts.routemisr.com/users/profile-data",
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      },
     );
     return data;
   } catch (err) {
@@ -24,18 +26,17 @@ export async function getLogedUserData() {
   }
 }
 
+export async function changePassWord(newPassword) {
+  try {
+    const { data } = await axios.patch(
+      "https://linked-posts.routemisr.com/users/change-password",
+      newPassword,
+      { headers: { token: localStorage.getItem("token") } },
+    );
 
-export async function changePassWord(newPassword){
-    try{
-        const {data}  = await axios.patch("https://linked-posts.routemisr.com/users/change-password" ,newPassword, 
-            {headers : {token : localStorage.getItem("token") }}
-        ) ;
-
-        return data ;
-
-    }
-    catch(err){
-        console.log(err)
-        return err
-    }
+    return data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
 }

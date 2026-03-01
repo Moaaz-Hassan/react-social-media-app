@@ -21,7 +21,7 @@ function MainLayout() {
       ) : (
         <div>
           <NavBar />
-          <div className="mt-[85px] lg:w-[75%] w-[95%] md:w-[85%] mx-auto">
+          <div className="mt-[80px] pt-2 lg:w-[75%]  w-[95%] md:w-[85%] mx-auto">
             <Outlet />
           </div>
         </div>

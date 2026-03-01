@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { createContext } from "react";
 import { getLogedUserData } from "../Services/loginServices";
 
@@ -8,12 +8,12 @@ export function AuthenticationCntextProvider({ children }) {
   const [isLogedIn, setIsLogedIn] = useState(
     localStorage.getItem("token") != null,
   );
-  const [userData, setuserData] = useState();
+  const [userData, setuserData] =  useState();
 
   async function getData() {
     const response = await getLogedUserData();
-    if (response.message == "success") {
-      setuserData(response.user);
+    if (response.success ==  true) {
+      setuserData(response.data.user);
     }
   }
 

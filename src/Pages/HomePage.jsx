@@ -23,23 +23,24 @@ function HomePage() {
   const [postForUpdating, setPostForUpdating] = useState(null);
 
   const [postesOption, setPostesOption] = useState("Feed");
-  // const [fetchFunction, setFetchFunction] = useState();
 
   const { ref, inView } = useInView({
     rootMargin: "500px",
   });
 
+  const postsQueryMap = useMemo(() => {
+    if (!userData) {
+      setPostesOption("Feed");
+    }
 
-  console.log(userData._id)
-
-
-const postsQueryMap = useMemo(() => ({
-  Feed: fetchHomeFeed,
-  Community: fetchAllPosts,
-  "Saved Posts": fetchBookmarks,
-  "My Posts": (params) =>
-    fetchUserPosts({ ...params, userId: userData._id }),
-}), [userData._id]);
+    return {
+      Feed: fetchHomeFeed,
+      Community: fetchAllPosts,
+      "Saved Posts": fetchBookmarks,
+      "My Posts": (params) =>
+        fetchUserPosts({ ...params, userId: userData._id }),
+    };
+  }, [userData]);
 
   const {
     data,
@@ -56,19 +57,7 @@ const postsQueryMap = useMemo(() => ({
       lastPage.meta.pagination.nextPage ?? undefined,
   });
 
-  console.log(data)
-
-  // useEffect(() => {
-  //   if (postesOption == "Feed") {
-  //     setFetchFunction(fetchHomeFeed);
-  //   } else if (postesOption == "My Posts") {
-  //     setFetchFunction(fetchUserPosts);
-  //   } else if (postesOption == "Community") {
-  //     setFetchFunction(fetchAllPosts);
-  //   } else {
-  //     setFetchFunction(fetchBookmarks);
-  //   }
-  // }, [postesOption]);
+  console.log(data);
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -94,15 +83,33 @@ const postsQueryMap = useMemo(() => ({
       />
       <PostForm postForUpdating={postForUpdating} queryKey={"getAllPostes"} />
 
-      {/* {data?.pages.map((page) =>
-        page.posts.map((post) => (
-          <CreatPostCard key={post.id} post={post} isFullView={false}  setPostForUpdating={setPostForUpdating} queryKey={"getAllPostes"} />
-        )),
-      )}
+      {postesOption == "Saved Posts"
+        ? data?.pages?.map((page) =>
+            page.data.bookmarks.map((post) => (
+              <CreatPostCard
+                key={post._id}
+                post={post}
+                isFullView={false}
+                setPostForUpdating={setPostForUpdating}
+                queryKey={[["fetchPostes", "Feed"]]}
+              />
+            )),
+          )
+        : data?.pages?.map((page) =>
+            page.data.posts.map((post) => (
+              <CreatPostCard
+                key={post._id}
+                post={post}
+                isFullView={false}
+                setPostForUpdating={setPostForUpdating}
+                queryKey={[["fetchPostes", "Feed"]]}
+              />
+            )),
+          )}
 
-      <div ref={ref} className="flex justify-center items-center mt-20">
+      <div ref={ref} className="flex justify-center items-center mt-4">
         {isFetching && <PostLoadingScrean />}
-      </div> */}
+      </div>
     </div>
   );
 }

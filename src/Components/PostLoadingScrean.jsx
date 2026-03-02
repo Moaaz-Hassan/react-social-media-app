@@ -3,7 +3,7 @@ import {Card, Skeleton} from "@heroui/react";
 
 function PostLoadingScrean() {
   return <>
-  <Card className="w-full rounded-md shadow-md h-auto py-3 px-3  space-y-5 p-4" radius="lg">
+  <Card className="w-full rounded-md shadow-md h-auto py-1 px-3  space-y-5 p-4" radius="lg">
       
     <div className=" w-full flex items-center gap-3">
       <div>

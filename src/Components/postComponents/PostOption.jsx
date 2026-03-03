@@ -1,8 +1,6 @@
-
-
 function PostOption({ postesOption, setPostesOption }) {
   return (
-    <div className="  grid grid-cols-2 md:grid-cols-4 gap-3  bg-white  g-white w-full rounded-xl shadow-md border-1 border-blue-50  h-auto p-4 my-2">
+    <div className=" my-3  grid grid-cols-2 md:grid-cols-4 gap-3  bg-white  g-white w-full rounded-xl shadow-md border-1 border-blue-50  h-auto p-4 ">
       <div
         onClick={() => setPostesOption("Feed")}
         className={`${postesOption == "Feed" ? "bg-blue-50 text-blue-600" : " text-gray-950 bg-gray-50 "} cursor-pointer active:scale-105  border-1 border-blue-50 flex items-center justify-center gap-1 p-2 rounded-xl w-full `}

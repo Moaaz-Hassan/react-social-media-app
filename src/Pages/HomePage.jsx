@@ -55,6 +55,9 @@ function HomePage() {
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.meta.pagination.nextPage ?? undefined,
+    staleTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   console.log(data);
@@ -77,11 +80,11 @@ function HomePage() {
 
   return (
     <div className="">
+      <PostForm postForUpdating={postForUpdating} queryKey={"getAllPostes"} />
       <PostOption
         postesOption={postesOption}
         setPostesOption={setPostesOption}
       />
-      <PostForm postForUpdating={postForUpdating} queryKey={"getAllPostes"} />
 
       {postesOption == "Saved Posts"
         ? data?.pages?.map((page) =>

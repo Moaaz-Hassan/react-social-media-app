@@ -23,9 +23,28 @@ import { edeticons } from "./SelectPrivacyIcone";
 import { deleticons } from "./SelectPrivacyIcone";
 import { saveicons } from "./SelectPrivacyIcone";
 import { unsaveicons } from "./SelectPrivacyIcone";
+import { togelePostLikes } from "../../Services/postServices";
 
 function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
   const { userData } = useContext(AuthenticationCntext);
+  const [likedIt, setLikedIt] = useState(
+    post.likes.some((like) => like == userData._id),
+  );
+  const [numberOflikes, setNumberOflikes] = useState(post.likes.length);
+
+  async function togeleikes(id) {
+    const rezalt = !likedIt;
+
+    setLikedIt(rezalt);
+    rezalt
+      ? setNumberOflikes(numberOflikes + 1)
+      : setNumberOflikes(numberOflikes - 1);
+
+    const data = await togelePostLikes(id);
+  }
+
+  // ------------------------------------------------------------------
+
   const [commentContent, setCommentContent] = useState("");
   const [loding, setLodeng] = useState(false);
   const [comments, setComments] = useState(post.comments || []);
@@ -90,6 +109,12 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
       await queryClient.invalidateQueries([queryKey]);
     }
     setDeleteLodeng(false);
+  }
+
+  async function togeleLikes(id) {
+    const respons = await togelePostLikes(id);
+    if (respons.success) {
+    }
   }
 
   useEffect(() => {
@@ -192,7 +217,7 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
 
           <Link to={"/single-Post/" + post.id}>
             {post.body && (
-              <p className=" mt-4 text-medium font-medium text-gray-800">
+              <p className=" mt-4 mb-2 text-medium font-medium text-gray-800">
                 {post.body}
               </p>
             )}
@@ -224,7 +249,7 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
                   />
                 </svg>
 
-                <p>{post.likes.length} likes</p>
+                <p>{numberOflikes} likes</p>
               </div>
               <div className=" flex items-center gap-3">
                 <div className=" flex items-center gap-1 text-gray-500 ">
@@ -265,123 +290,101 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
             </div>
           </Link>
           <hr />
-          <div className="flex my-3 justify-around ">
-            <button className="flex flex-row justify-center items-center cursor-pointer  ">
+          <div className="grid grid-cols-3 p-2 ">
+            <button
+              className={` ${likedIt ? " text-blue-600  " : " text-gray-800 "} flex flex-row justify-center gap-1 items-center cursor-pointer  `}
+              onClick={() => togeleikes(post._id)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width={27}
-                height={27}
-                viewBox="0 0 24 24"
                 fill="none"
-                stroke="#838383"
-                strokeWidth={2}
-                strokeLinecap="square"
-                strokeLinejoin="round"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-5"
               >
-                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z"
+                />
               </svg>
-              <span className="font-semibold text-lg text-gray-600">Like</span>
+
+              <span className="font-semibold text-lg ">Like</span>
             </button>
 
             <button
               onClick={() => setShowAllComments(!showAllComments)}
-              className="flex flex-row justify-center items-center cursor-pointer  "
+              className="flex flex-row justify-center gap-1 items-center cursor-pointer text-gray-800  "
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width={27}
-                height={27}
-                viewBox="0 0 24 24"
                 fill="none"
-                stroke="#838383"
-                strokeWidth={2}
-                strokeLinecap="square"
-                strokeLinejoin="round"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-5"
               >
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
+                />
               </svg>
-              <span className="font-semibold text-lg text-gray-600">
-                Comment
-              </span>
+
+              <span className="font-semibold text-lg ">Comment</span>
             </button>
             <button
               onClick={() => sharePost(post._id, post.body)}
-              className="flex flex-row justify-center items-center cursor-pointer "
+              className="flex flex-row gap-1 justify-center items-center cursor-pointer text-gray-800 "
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width={27}
-                height={27}
-                viewBox="0 0 24 24"
                 fill="none"
-                stroke="#838383"
-                strokeWidth={2}
-                strokeLinecap="square"
-                strokeLinejoin="round"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-5"
               >
-                <circle cx={18} cy={5} r={3} />
-                <circle cx={6} cy={12} r={3} />
-                <circle cx={18} cy={19} r={3} />
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                />
               </svg>
-              <span className="font-semibold text-lg text-gray-600">Share</span>
+
+              <span className="font-semibold text-lg ">Share</span>
             </button>
           </div>
-          <hr />
-          <form
-            onSubmit={isUpdatingComment ? updateComment : createComment}
-            className="flex items-center justify-between my-3 gap-3"
-          >
-            <Input
-              value={commentContent}
-              onChange={(e) => setCommentContent(e.target.value)}
-              placeholder="Add Comment ..... "
-            />
-            <Button
-              disabled={commentContent.length < 1}
-              isLoading={loding}
-              type="submite"
-            >
-              {isUpdatingComment ? "Update" : "Comment"}
-            </Button>
-          </form>
-          {comments.length > 0 && showAllComments ? (
-            comments.map((comment) => (
-              <CreatePostComment
-                key={comment._id}
-                deleteComment={deleteComment}
-                isUpdatingComment={isUpdatingComment}
-                setCommentForUpdate={setCommentForUpdate}
-                post={post}
-                userData={userData}
-                comment={comment}
-                CommentDeleteloding={CommentDeleteloding}
-              />
-            ))
-          ) : comments.length > 0 && isFullView == false ? (
-            <CreatePostComment
-              deleteComment={deleteComment}
-              isUpdatingComment={isUpdatingComment}
-              setCommentForUpdate={setCommentForUpdate}
-              post={post}
-              userData={userData}
-              comment={comments[0]}
-              CommentDeleteloding={CommentDeleteloding}
-            />
-          ) : (
-            comments.map((comment) => (
-              <CreatePostComment
-                key={comment._id}
-                deleteComment={deleteComment}
-                isUpdatingComment={isUpdatingComment}
-                setCommentForUpdate={setCommentForUpdate}
-                post={post}
-                userData={userData}
-                comment={comment}
-                deleteloding={deleteloding}
-              />
-            ))
+          {post.commentsCount > 0 && (
+            <div className=" w-full rounded-2xl border-1 border-gray-200 mt-2 bg-gray-50 p-3">
+              <h2 className=" text-gray-800 font-bold text-medium">
+                Top Comment
+              </h2>
+              <div className=" flex items-center gap-3 mt-2">
+                <Link
+                  to={`users-profile/${post.topComment.commentCreator._id}`}
+                >
+                  <img
+                    className="w-10 h-10 rounded-full cursor-pointer "
+                    src={post.topComment.commentCreator.photo}
+                    alt={post.topComment.commentCreator.name}
+                  />
+                </Link>
+
+                <div className=" rounded-2xl bg-white p-2 w-[70%] border-1 border-blue-50">
+                  <h2 className=" text-gray-800 font-bold text-sm mb-1 ">
+                    {post.topComment.commentCreator.name}
+                  </h2>
+                  <h2 className=" text-gray-700 font-semibold text-sm">
+                    {post.topComment.content}
+                  </h2>
+                </div>
+              </div>
+              <h2 className=" text-blue-600 mt-2 cursor-pointer font-bold text-sm">
+                View all comments
+              </h2>
+            </div>
           )}
         </div>
       )}

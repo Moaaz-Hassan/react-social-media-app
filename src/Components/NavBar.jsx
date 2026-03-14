@@ -125,7 +125,9 @@ function NavBar() {
             />
           </svg>
 
-          <h2 className=" font-bold text-sm  hidden md:block ">Notifications</h2>
+          <h2 className=" font-bold text-sm  hidden md:block ">
+            Notifications
+          </h2>
         </NavLink>
       </div>
       <Dropdown>

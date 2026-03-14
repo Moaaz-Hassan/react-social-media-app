@@ -1,9 +1,14 @@
-function PostOption({ postesOption, setPostesOption }) {
+import { useLocation, useNavigate } from "react-router-dom";
+
+function HomeNavbar() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   return (
     <div className=" my-3  grid grid-cols-2 md:grid-cols-4 gap-3  bg-white  g-white w-full rounded-xl shadow-md border-1 border-blue-50  h-auto p-4 ">
       <div
-        onClick={() => setPostesOption("Feed")}
-        className={`${postesOption == "Feed" ? "bg-blue-50 text-blue-600" : " text-gray-950 bg-gray-50 "} cursor-pointer active:scale-105  border-1 border-blue-50 flex items-center justify-center gap-1 p-2 rounded-xl w-full `}
+        onClick={() => navigate("/")}
+        className={`${location.pathname === "/" ? "bg-blue-50 text-blue-600" : " text-gray-950 bg-gray-50 "} cursor-pointer active:scale-105  border-1 border-blue-50 flex items-center justify-center gap-1 p-2 rounded-xl w-full `}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -24,8 +29,8 @@ function PostOption({ postesOption, setPostesOption }) {
       </div>
 
       <div
-        onClick={() => setPostesOption("Community")}
-        className={`${postesOption == "Community" ? "bg-blue-50 text-blue-600" : " text-gray-950 bg-gray-50 "} cursor-pointer active:scale-105 border-1 border-blue-50 flex items-center justify-center gap-1 p-2 rounded-xl w-full `}
+        onClick={() => navigate("/community")}
+        className={`${location.pathname === "/community" ? "bg-blue-50 text-blue-600" : " text-gray-950 bg-gray-50 "} cursor-pointer active:scale-105 border-1 border-blue-50 flex items-center justify-center gap-1 p-2 rounded-xl w-full `}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -46,8 +51,8 @@ function PostOption({ postesOption, setPostesOption }) {
       </div>
 
       <div
-        onClick={() => setPostesOption("My Posts")}
-        className={`${postesOption == "My Posts" ? "bg-blue-50 text-blue-600" : " text-gray-950 bg-gray-50 "} cursor-pointer active:scale-105 border-1 border-blue-50 flex items-center justify-center gap-1 p-2 rounded-xl w-full `}
+        onClick={() => navigate("/my-posts")}
+        className={`${location.pathname === "/my-posts" ? "bg-blue-50 text-blue-600" : " text-gray-950 bg-gray-50 "} cursor-pointer active:scale-105 border-1 border-blue-50 flex items-center justify-center gap-1 p-2 rounded-xl w-full `}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -68,8 +73,8 @@ function PostOption({ postesOption, setPostesOption }) {
       </div>
 
       <div
-        onClick={() => setPostesOption("Saved Posts")}
-        className={`${postesOption == "Saved Posts" ? "bg-blue-50 text-blue-600" : " text-gray-950 bg-gray-50 "} cursor-pointer active:scale-105 border-1 border-blue-50 flex items-center justify-center gap-1 p-2 rounded-xl w-full `}
+        onClick={() => navigate("/saved-posts")}
+        className={`${location.pathname === "/saved-posts" ? "bg-blue-50 text-blue-600" : " text-gray-950 bg-gray-50 "} cursor-pointer active:scale-105 border-1 border-blue-50 flex items-center justify-center gap-1 p-2 rounded-xl w-full `}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -92,4 +97,4 @@ function PostOption({ postesOption, setPostesOption }) {
   );
 }
 
-export default PostOption;
+export default HomeNavbar;

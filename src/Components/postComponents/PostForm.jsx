@@ -12,7 +12,7 @@ import { Alert } from "@heroui/react";
 import SelectPrivacyIcone from "./SelectPrivacyIcone";
 import { onlyMeicons } from "./SelectPrivacyIcone";
 import { publicicons } from "./SelectPrivacyIcone";
-import {follwingicon} from "./SelectPrivacyIcone";
+import { follwingicon } from "./SelectPrivacyIcone";
 
 function PostForm({ postForUpdating, queryKey }) {
   // post states
@@ -60,6 +60,7 @@ function PostForm({ postForUpdating, queryKey }) {
     }
 
     if (response.success) {
+      await queryClient.invalidateQueries([queryKey]);
       setBody("");
       setimageUrl(null);
       setimage(null);
@@ -84,7 +85,7 @@ function PostForm({ postForUpdating, queryKey }) {
       response = await updatePostApi(idForUpdate, formData);
     }
 
-    if (response.message == "success") {
+    if (response.success) {
       await queryClient.invalidateQueries([queryKey]);
       setBody("");
       setimageUrl(null);
@@ -146,9 +147,7 @@ function PostForm({ postForUpdating, queryKey }) {
               className="w-40 border-1 border-blue-50 rounded-2xl"
               selectedKeys={[privacy]}
               onChange={(e) => setPrivacy(e.target.value)}
-              startContent={
-                <SelectPrivacyIcone privacy={privacy} />
-              }
+              startContent={<SelectPrivacyIcone privacy={privacy} />}
               radius="lg"
               size="sm"
             >

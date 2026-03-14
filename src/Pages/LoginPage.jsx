@@ -35,9 +35,9 @@ function LoginPage() {
       const response = await sendLogInData(value);
       if (response.error) {
         setApiErorre(response.error);
-        return ;
+        return;
       } else {
-        localStorage.setItem("token",response.data.token);
+        localStorage.setItem("token", response.data.token);
         setIsLogedIn(response.data.token);
         navigate("/");
       }
@@ -49,8 +49,8 @@ function LoginPage() {
   }
 
   return (
-    <div className=" min-h-screen flex justify-center items-center ">
-      <div className="  bg-white py-10 px-6 rounded-2xl shadow-2xl">
+    <div className=" min-h-screen  flex justify-center items-center ">
+      <div className="  bg-white py-10 px-6 w-[90%] md:w-96 rounded-2xl shadow-2xl">
         <h2 className=" text-2xl mb-4">LogIn</h2>
         <form onSubmit={handleSubmit(login)} className="flex flex-col gap-4">
           <Input

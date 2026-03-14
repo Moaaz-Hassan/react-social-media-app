@@ -68,8 +68,8 @@ function RegisterPage() {
   }
 
   return (
-    <div className=" min-h-screen flex justify-center items-center">
-      <div className="  bg-white py-10 px-6 rounded-2xl shadow-2xl">
+    <div className=" min-h-screen  flex justify-center items-center">
+      <div className="  bg-white py-10 w-[90%] md:w-96 px-6 rounded-2xl shadow-2xl">
         <h2 className=" text-2xl mb-4">Register</h2>
         <form onSubmit={handleSubmit(signUp)} className=" flex flex-col gap-4">
           <Input

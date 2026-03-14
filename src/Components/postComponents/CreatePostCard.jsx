@@ -24,26 +24,10 @@ import { deleticons } from "./SelectPrivacyIcone";
 import { saveicons } from "./SelectPrivacyIcone";
 import { unsaveicons } from "./SelectPrivacyIcone";
 import { togelePostLikes } from "../../Services/postServices";
+import { togeleBookmarkPostes } from "../../Services/postServices";
 
-function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
-  const { userData } = useContext(AuthenticationCntext);
-  const [likedIt, setLikedIt] = useState(
-    post.likes.some((like) => like == userData._id),
-  );
-  const [numberOflikes, setNumberOflikes] = useState(post.likes.length);
-
-  async function togeleikes(id) {
-    const rezalt = !likedIt;
-
-    setLikedIt(rezalt);
-    rezalt
-      ? setNumberOflikes(numberOflikes + 1)
-      : setNumberOflikes(numberOflikes - 1);
-
-    const data = await togelePostLikes(id);
-  }
-
-  // ------------------------------------------------------------------
+function CreatPostCard({ post, setPostForUpdating, queryKey }) {
+  console.log(post);
 
   const [commentContent, setCommentContent] = useState("");
   const [loding, setLodeng] = useState(false);
@@ -102,24 +86,49 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
     }
     setCommentDeleteLodeng(false);
   }
-  async function deletYourPost(id) {
+
+  // -----------------------------------------
+
+  const { userData } = useContext(AuthenticationCntext);
+  const [likedIt, setLikedIt] = useState(
+    post.likes.some((like) => like == userData._id),
+  );
+  const [bookmarkedIt, setBookmarkedIt] = useState(post.bookmarked);
+  const [numberOflikes, setNumberOflikes] = useState(post.likes.length);
+
+  async function deletYourPost() {
     setDeleteLodeng(true);
-    const resposn = await deletPost(id);
-    if (resposn.message == "success") {
-      await queryClient.invalidateQueries([queryKey]);
+    const resposn = await deletPost(post.id);
+    if (resposn.success) {
+      await queryClient.invalidateQueries(queryKey);
     }
     setDeleteLodeng(false);
   }
 
-  async function togeleLikes(id) {
-    const respons = await togelePostLikes(id);
-    if (respons.success) {
-    }
+  async function togeleikes() {
+    const rezalt = !likedIt;
+
+    setLikedIt(rezalt);
+    rezalt
+      ? setNumberOflikes(numberOflikes + 1)
+      : setNumberOflikes(numberOflikes - 1);
+
+    const data = await togelePostLikes(post.id);
   }
 
-  useEffect(() => {
-    reverseComments();
-  }, []);
+  async function togeleBookmark() {
+    setBookmarkedIt(!bookmarkedIt);
+    const data = await togeleBookmarkPostes(post.id);
+  }
+
+  function updatePost() {
+    setPostForUpdating(post);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+  // -----------------------------------------
 
   return (
     <>
@@ -128,7 +137,13 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
       ) : (
         <div className="bg-white border-1 border-blue-50 w-full rounded-xl shadow-md h-auto py-3 px-3 my-5">
           <div className="w-full h-16 flex items-center justify-between ">
-            <Link to={userData?._id === post?.user?._id ? "profile" : "#"}>
+            <Link
+              to={
+                userData?._id === post?.user?._id
+                  ? "/profile"
+                  : `/user-profile/${post?.user?._id}`
+              }
+            >
               <div className="flex">
                 <img
                   className=" rounded-full w-10 h-10 mr-3"
@@ -147,7 +162,7 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
                     </p>
                   </div>
                 </div>
-                {post.bookmarked && (
+                {bookmarkedIt && (
                   <div className=" w-fit h-fit flex items-center  text-sm font-bold text-blue-600">
                     {saveicons}
                     Saved
@@ -174,11 +189,12 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
                 </svg>
               </DropdownTrigger>
               <DropdownMenu aria-label="Static Actions">
-                {post.bookmarked ? (
+                {bookmarkedIt ? (
                   <DropdownItem
                     key="Unsave"
                     startContent={unsaveicons}
                     color="primary"
+                    onClick={togeleBookmark}
                   >
                     Unsave Post
                   </DropdownItem>
@@ -187,6 +203,7 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
                     key="Save"
                     startContent={saveicons}
                     color="primary"
+                    onClick={togeleBookmark}
                   >
                     Save Post
                   </DropdownItem>
@@ -198,6 +215,7 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
                       key="edit"
                       startContent={edeticons}
                       color="primary"
+                      onClick={updatePost}
                     >
                       Update Post
                     </DropdownItem>
@@ -206,6 +224,7 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
                       startContent={deleticons}
                       className="text-danger"
                       color="danger"
+                      onClick={deletYourPost}
                     >
                       Delete Post
                     </DropdownItem>
@@ -223,11 +242,7 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
             )}
             {post.image && (
               <img
-                className={
-                  !isFullView
-                    ? ` w-full h-[400px]  lg:h-[550px] lg:w-[90%] mx-auto object-cover rounded-md mt-2`
-                    : "mt-2"
-                }
+                className={` w-full h-[400px]  lg:h-[550px] lg:w-[90%] mx-auto object-cover rounded-md mt-2`}
                 src={post.image}
               />
             )}
@@ -293,7 +308,7 @@ function CreatPostCard({ post, isFullView, setPostForUpdating, queryKey }) {
           <div className="grid grid-cols-3 p-2 ">
             <button
               className={` ${likedIt ? " text-blue-600  " : " text-gray-800 "} flex flex-row justify-center gap-1 items-center cursor-pointer  `}
-              onClick={() => togeleikes(post._id)}
+              onClick={togeleikes}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

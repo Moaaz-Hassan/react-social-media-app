@@ -15,7 +15,7 @@ import { publicicons } from "./SelectPrivacyIcone";
 import { follwingicon } from "./SelectPrivacyIcone";
 
 function PostForm({ postForUpdating, queryKey }) {
-  // post states
+
   const [body, setBody] = useState("");
   const [image, setimage] = useState(null);
   const [privacy, setPrivacy] = useState("public");
@@ -79,6 +79,7 @@ function PostForm({ postForUpdating, queryKey }) {
     const formData = new FormData();
     body?.trim() && formData.append("body", body);
     image && formData.append("image", image);
+    privacy && formData.append("privacy", privacy);
 
     let response = "";
     if (body?.trim() || image) {
@@ -99,7 +100,7 @@ function PostForm({ postForUpdating, queryKey }) {
   }
 
   useEffect(() => {
-    if (postForUpdating?.body || postForUpdating?.image) {
+    if (postForUpdating?.body || postForUpdating?.image || postForUpdating?.isShare ) {
       setupdate(true);
       setBody(postForUpdating?.body);
       setimageUrl(postForUpdating?.image);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getPost } from "../Services/postServices";
 import PostLoadingScrean from "../Components/PostLoadingScrean";
-import CreatPostCard from "../Components/postComponents/CreatePostCard";
+import CreatPostCard from "../Components/postComponents/CreatePost/CreatePostCard";
 
 function PostDetailsPage() {
   const { id } = useParams();

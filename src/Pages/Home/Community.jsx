@@ -1,13 +1,13 @@
 import { fetchAllPosts } from "../../Services/postServices";
 import { useInView } from "react-intersection-observer";
 import PostLoadingScrean from "../../Components/PostLoadingScrean";
-import CreatPostCard from "../../Components/postComponents/CreatePostCard";
+import CreatPostCard from "../../Components/postComponents/CreatePost/CreatePostCard";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 
 function Community() {
-  const { setPostForUpdating, setOueryKeyes } = useOutletContext();
+  const { setPostForUpdating , queryKeyes } = useOutletContext();
 
   const { ref, inView } = useInView({
     rootMargin: "500px",
@@ -18,9 +18,8 @@ function Community() {
       fetchNextPage();
     }
   }, [inView]);
-  useEffect(() => {
-    setOueryKeyes(["fetchCommunityPostes"]);
-  }, []);
+
+
 
   const {
     data,
@@ -30,7 +29,7 @@ function Community() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["fetchCommunityPostes"],
+    queryKey: ["community"],
     queryFn: fetchAllPosts,
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
@@ -60,7 +59,7 @@ function Community() {
                 key={post._id}
                 post={post}
                 setPostForUpdating={setPostForUpdating}
-                queryKey={["fetchCommunityPostes"]}
+                queryKey={[queryKeyes]}
               />
             ),
         ),

@@ -1,4 +1,5 @@
 import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 export async function sendLogInData(values) {
   try {
@@ -14,12 +15,7 @@ export async function sendLogInData(values) {
 
 export async function getLogedUserData() {
   try {
-    const { data } = await axios.get(
-      "https://route-posts.routemisr.com/users/profile-data",
-      {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      },
-    );
+    const { data } = await axiosInstance.get("/users/profile-data");
     return data;
   } catch (err) {
     console.log(err);

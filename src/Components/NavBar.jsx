@@ -21,10 +21,12 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@heroui/react";
+import { useLocation } from "react-router-dom";
 
 function NavBar() {
   const [showNavBar, setShowNavBar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const location = useLocation();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -58,9 +60,7 @@ function NavBar() {
       <div className=" flex items-center gap-4 p-2 rounded-xl border-1 border-blue-50 bg-gray-100 ">
         <NavLink
           to={"/"}
-          className={({ isActive }) =>
-            `${isActive ? "bg-white text-blue-600" : " text-gray-950 "} flex items-center justify-center gap-1 p-2 rounded-xl`
-          }
+          className={`${location.pathname == "/" || location.pathname == "/saved-posts" || location.pathname == "/my-posts" || location.pathname == "/community" ? "bg-white text-blue-600" : " text-gray-950 "} flex items-center justify-center gap-1 p-2 rounded-xl`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

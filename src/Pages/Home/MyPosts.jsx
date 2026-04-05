@@ -1,7 +1,7 @@
 import { fetchUserPosts } from "../../Services/postServices";
 import { useInView } from "react-intersection-observer";
 import PostLoadingScrean from "../../Components/PostLoadingScrean";
-import CreatPostCard from "../../Components/postComponents/CreatePostCard";
+import CreatPostCard from "../../Components/postComponents/CreatePost/CreatePostCard";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
@@ -10,7 +10,7 @@ import AuthenticationCntext from "../../Context/AuthenticationCntext";
 
 function MyPosts() {
   let { userData } = useContext(AuthenticationCntext);
-  const { setPostForUpdating, setOueryKeyes } = useOutletContext();
+  const { setPostForUpdating , queryKeyes } = useOutletContext();
   const { ref, inView } = useInView({
     rootMargin: "500px",
   });
@@ -20,9 +20,8 @@ function MyPosts() {
       fetchNextPage();
     }
   }, [inView]);
-  useEffect(() => {
-    setOueryKeyes(["fetchUserPosts"]);
-  }, []);
+
+  
 
   const {
     data,
@@ -32,7 +31,7 @@ function MyPosts() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["fetchUserPosts"],
+    queryKey: ["my-posts"],
     queryFn: ({ pageParam }) =>
       fetchUserPosts({
         pageParam,
@@ -67,7 +66,7 @@ function MyPosts() {
                 key={post._id}
                 post={post}
                 setPostForUpdating={setPostForUpdating}
-                queryKey={["fetchUserPosts"]}
+                queryKey={[queryKeyes]}
               />
             ),
         ),

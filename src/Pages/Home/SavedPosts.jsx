@@ -1,13 +1,13 @@
 import { fetchBookmarks } from "../../Services/postServices";
 import { useInView } from "react-intersection-observer";
 import PostLoadingScrean from "../../Components/PostLoadingScrean";
-import CreatPostCard from "../../Components/postComponents/CreatePostCard";
+import CreatPostCard from "../../Components/postComponents/CreatePost/CreatePostCard";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 
 export default function SavedPosts() {
-  const { setPostForUpdating, setOueryKeyes } = useOutletContext();
+  const { setPostForUpdating , queryKeyes } = useOutletContext();
   const { ref, inView } = useInView({
     rootMargin: "500px",
   });
@@ -17,9 +17,7 @@ export default function SavedPosts() {
       fetchNextPage();
     }
   }, [inView]);
-  useEffect(() => {
-    setOueryKeyes(["fetchBookmarksPostes"]);
-  }, []);
+
 
   const {
     data,
@@ -29,7 +27,7 @@ export default function SavedPosts() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["fetchBookmarksPostes"],
+    queryKey: [queryKeyes],
     queryFn: fetchBookmarks,
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>

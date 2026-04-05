@@ -1,4 +1,3 @@
-import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
 export async function fetchAllPosts({ pageParam = 1 }) {
@@ -54,6 +53,42 @@ export async function deletPost(id) {
   }
 }
 
+export async function togelePostLikes(id) {
+  try {
+    const { data } = await axiosInstance.put(`/posts/${id}/like`);
+
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function togeleBookmarkPostes(id) {
+  try {
+    const { data } = await axiosInstance.put(`/posts/${id}/bookmark`);
+
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+
+export async function SharePost(id , body ) {
+  try {
+    const { data } = await axiosInstance.post(`/posts/${id}/share` ,
+      body ,  
+      {headers : {
+          "Content-Type": "application/json",
+        },}
+    );
+
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 // --------------------------------------------------
 
 export async function getPost(id) {
@@ -81,34 +116,19 @@ export async function updatePostApi(postId, formData) {
   }
 }
 
-// "error": "\"page\" is not allowed" so i cant use InfiniteQuery
-export async function getUserPost() {
+
+export async function GetPostComments(postId) {
   try {
-    const { data } = await axiosInstance.get(
-      "/users/664bcf3e33da217c4af21f00/posts?",
-    );
+    const { data } = await axiosInstance.get(`/posts/${postId}/comments?page=1&limit=10`);
     return data;
   } catch (err) {
     console.log(err);
   }
 }
 
-export async function togelePostLikes(id) {
-  try {
-    const { data } = await axiosInstance.put(`/posts/${id}/like`);
 
-    return data;
-  } catch (err) {
-    console.log(err);
-  }
-}
+// GET
+// 
+// https://route-posts.routemisr.com/posts//comments?page=1&limit=10
 
-export async function togeleBookmarkPostes(id) {
-  try {
-    const { data } = await axiosInstance.put(`/posts/${id}/bookmark`);
 
-    return data;
-  } catch (err) {
-    console.log(err);
-  }
-}

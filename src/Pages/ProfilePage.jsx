@@ -1,30 +1,54 @@
 import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import AuthenticationCntext from "../Context/AuthenticationCntext";
-import { getUserPost } from "../Services/postServices";
-import CreatPostCard from "../Components/postComponents/CreatePostCard";
+import { fetchUserPosts } from "../Services/postServices";
+import CreatPostCard from "../Components/postComponents/CreatePost/CreatePostCard";
 import PostForm from "../Components/postComponents/PostForm";
 import { uploadProfilePhoto } from "../Services/userprofile";
 import { getLogedUserData } from "../Services/loginServices";
-import Placeholder from  "../assets/default-profile.png";
+import Placeholder from "../assets/default-profile.png";
 import { Link } from "react-router-dom";
 import PostLoadingScrean from "../Components/PostLoadingScrean";
 import { queryClient } from "../App";
-import { useQuery } from "@tanstack/react-query";
+import { useInView } from "framer-motion";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 function ProfilePage() {
   let { userData, setuserData } = useContext(AuthenticationCntext);
+  const { ref, inView } = useInView({
+    rootMargin: "500px",
+  });
   const [lodingPhoto, setLodingPhoto] = useState(false);
   const [postForUpdating, setPostForUpdating] = useState(null);
 
   const [posts, setPosts] = useState(null);
 
-  const { data, isLoading } = useQuery({
+  const {
+    data,
+    fetchNextPage,
+    isFetching,
+    isError,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["getUserPost"],
-    queryFn: getUserPost,
+    queryFn: ({ pageParam }) =>
+      fetchUserPosts({ pageParam, userId: userData.id }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.pagination.nextPage ?? undefined,
+    staleTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
-  // "error": "\"sort\" is not allowed" so i have to do it 
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView]);
+
+  // "error": "\"sort\" is not allowed" so i have to do it
   function reversePosts() {
     if (!isLoading) {
       let reversedposts = structuredClone(data.posts);
@@ -33,9 +57,11 @@ function ProfilePage() {
     }
   }
 
-  useEffect(() => {
-    reversePosts();
-  }, [data]);
+  // useEffect(() => {
+  //   reversePosts();
+  // }, [data]);
+
+  console.log(data);
 
   async function handelImage(e) {
     const file = e.target.files[0];
@@ -54,6 +80,16 @@ function ProfilePage() {
       console.log(err);
     }
     setLodingPhoto(false);
+  }
+
+  if (isError) {
+    return (
+      <div className=" flex items-center justify-center">
+        <h2 className=" text-medium font-medium text-red-600">
+          An error occurred, please try again.{" "}
+        </h2>
+      </div>
+    );
   }
 
   return (
@@ -123,20 +159,33 @@ function ProfilePage() {
           </div>
         </div>
 
-        <PostForm postForUpdating={postForUpdating} queryKey={"getUserPost"} />
+        <PostForm
+          postForUpdating={postForUpdating}
+          queryKey={["getUserPost"]}
+        />
 
-        {isLoading ? (
+        {isFetching ? (
           <PostLoadingScrean />
         ) : (
-          posts?.map((post) => (
-            <CreatPostCard
-              key={post.id}
-              post={post}
-              isFullView={false}
-              setPostForUpdating={setPostForUpdating}
-              queryKey={"getUserPost"}
-            />
-          ))
+          <div>
+            {data?.pages?.map((page) =>
+              page.data.posts.map(
+                (post) =>
+                  post && (
+                    <CreatPostCard
+                      key={post._id}
+                      post={post}
+                      setPostForUpdating={setPostForUpdating}
+                      queryKey={["getUserPost"]}
+                    />
+                  ),
+              ),
+            )}
+
+            <div ref={ref} className="flex justify-center items-center mt-4">
+              {isFetching && <PostLoadingScrean />}
+            </div>
+          </div>
         )}
       </div>
     </>

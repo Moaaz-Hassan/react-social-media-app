@@ -1,13 +1,13 @@
 import { fetchHomeFeed } from "../../Services/postServices";
 import { useInView } from "react-intersection-observer";
 import PostLoadingScrean from "../../Components/PostLoadingScrean";
-import CreatPostCard from "../../Components/postComponents/CreatePostCard";
+import CreatPostCard from "../../Components/postComponents/CreatePost/CreatePostCard";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 
 function Feed() {
-  const { setPostForUpdating, setOueryKeyes } = useOutletContext();
+  const { setPostForUpdating , queryKeyes } = useOutletContext();
   const { ref, inView } = useInView({
     rootMargin: "500px",
   });
@@ -17,9 +17,6 @@ function Feed() {
       fetchNextPage();
     }
   }, [inView]);
-  useEffect(() => {
-    setOueryKeyes(["fetchHomeFeedPosts"]);
-  }, []);
 
   const {
     data,
@@ -29,7 +26,7 @@ function Feed() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["fetchHomeFeedPosts"],
+    queryKey: ["feed"],
     queryFn: fetchHomeFeed,
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
@@ -59,7 +56,7 @@ function Feed() {
                 key={post._id}
                 post={post}
                 setPostForUpdating={setPostForUpdating}
-                queryKey={["fetchHomeFeedPosts"]}
+                queryKey={[queryKeyes]}
               />
             ),
         ),

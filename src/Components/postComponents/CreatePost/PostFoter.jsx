@@ -1,55 +1,97 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { togelePostLikes } from "../../../Services/postServices";
-import { Link } from "react-router-dom";
 import CommentLoadingScrean from "../../CommentLoadingScrean";
 import { GetPostComments } from "../../../Services/postServices";
 import CreatePostComment from "../CreatePostComment";
 import { Button } from "@heroui/react";
+import { useQuery } from "@tanstack/react-query";
+import { createCommentApi } from "../../../Services/CommentServices";
+import { queryClient } from "../../../App";
+import { UpdateCommentApi } from "../../../Services/CommentServices";
+import { useEffect } from "react";
 
 function PostFoter({ post, userData, onOpen }) {
 
+    // getCommint
     const [showAllComments, setShowAllComments] = useState(false);
-    // const [commentContent, setCommentContent] = useState("");
-    const [comments, setComments] = useState([]);
-    const [commentsLoding, setCommentsLoding] = useState();
-
-    useEffect(() => {
-        async function getCommint() {
-            setCommentsLoding(true)
-            const respons = await GetPostComments(post.id)
-            console.log(respons)
-            if (respons.success) {
-                setComments(respons.data.comments)
-            }
-            setCommentsLoding(false)
-
-        }
-        if (showAllComments) {
-            getCommint()
-        }
-
-    }, [showAllComments])
+    const { data, isLoading } = useQuery({
+        queryKey: ["getCommint", post.id],
+        queryFn: () => GetPostComments(post.id),
+        enabled: !!showAllComments
+    });
 
 
-
+    // createComment
     // ------------------------------------
     const [body, setBody] = useState("");
     const [image, setimage] = useState(null);
-    const [openEmojiForm, setOpenEmojiForm] = useState(false);
     const [imageUrl, setimageUrl] = useState(null);
     const [loding, setLodeng] = useState(false);
-    const [update, setupdate] = useState(false);
+
     function handelImage(e) {
-        setimage(e.target.files[0]);
-        setimageUrl(URL.createObjectURL(e.target.files[0]));
+        const file = e.target.files[0];
+        setimage(file);
+        setimageUrl(URL.createObjectURL(file));
 
-        if (e) {
-            e.target.value = "";
-        }
+        e.target.value = null;
     }
+
+    async function createComment() {
+        setLodeng(true);
+        const formData = new FormData();
+        body?.trim() && formData.append("content", body);
+        image && formData.append("image", image);
+
+        const response = await createCommentApi(formData, post.id);
+
+        if (response.success) {
+            await queryClient.invalidateQueries(["getCommint", post.id])
+            setBody(null)
+            setimageUrl(null)
+            setimage(null)
+
+        }
+        setLodeng(false);
+    }
+
+    // ------------------------
+    const [commentForUpdate, setCommentForUpdate] = useState(null)
+
+    async function UpdateCommint(params) {
+
+        setLodeng(true);
+        const formData = new FormData();
+        body?.trim() && formData.append("content", body);
+        image && formData.append("image", image);
+
+        const response = await UpdateCommentApi(formData, commentForUpdate._id ,post.id);
+
+        if (response.success) {
+            await queryClient.invalidateQueries(["getCommint", post.id])
+            setBody(null)
+            setimageUrl(null)
+            setimage(null)
+            setCommentForUpdate(null)
+
+        }
+        setLodeng(false);
+
+    }
+
+    useEffect(() => {
+        if (commentForUpdate) {
+            setBody(commentForUpdate.content)
+            setimageUrl(commentForUpdate?.image)
+        }else{
+            setBody(null)
+            setimageUrl(null)
+        }
+
+    }, [commentForUpdate])
+
+
+    // togeleikes
     // ------------------------------------
-
-
     const [numberOflikes, setNumberOflikes] = useState(post.likes.length);
     const [likedIt, setLikedIt] = useState(
         post.likes.some((like) => like == userData._id),
@@ -150,7 +192,7 @@ function PostFoter({ post, userData, onOpen }) {
                 </button>
 
                 <button
-                    onClick={() => !commentsLoding && setShowAllComments(!showAllComments)}
+                    onClick={() => !isLoading && setShowAllComments(!showAllComments)}
                     className="flex flex-row justify-center gap-1 items-center cursor-pointer text-gray-800  "
                 >
                     <svg
@@ -168,7 +210,7 @@ function PostFoter({ post, userData, onOpen }) {
                         />
                     </svg>
 
-                    <span className="font-semibold text-lg ">{commentsLoding ? "Loding..." : "Comment"}</span>
+                    <span className="font-semibold text-lg ">{isLoading ? "Loding..." : "Comment"}</span>
                 </button>
                 <button
                     onClick={onOpen}
@@ -192,44 +234,14 @@ function PostFoter({ post, userData, onOpen }) {
                     <span className="font-semibold text-lg ">Share</span>
                 </button>
             </div>
-            {post.topComment > 0 && showAllComments === false ? (
-                <div className=" w-full rounded-2xl border-1 border-gray-200 mt-2 bg-gray-50 p-3">
-                    <h2 className=" text-gray-800 font-bold text-medium">
-                        Top Comment
-                    </h2>
-                    <div className=" flex items-center gap-3 mt-2">
-                        <Link
-                            to={`users-profile/${post.topComment.commentCreator._id}`}
-                        >
-                            <img
-                                className="w-10 h-10 rounded-full cursor-pointer "
-                                src={post.topComment.commentCreator.photo}
-                                alt={post.topComment.commentCreator.name}
-                            />
-                        </Link>
-
-                        <div className=" rounded-2xl bg-white p-2 w-[70%] border-1 border-blue-50">
-                            <h2 className=" text-gray-800 font-bold text-sm mb-1 ">
-                                {post.topComment.commentCreator.name}
-                            </h2>
-                            <h2 className=" text-gray-700 font-semibold text-sm">
-                                {post.topComment.content}
-                            </h2>
-                        </div>
-                    </div>
-                    <h2 onClick={() => setShowAllComments(!showAllComments)} className=" text-blue-600 mt-2 cursor-pointer font-bold text-sm">
-                        View all comments
-                    </h2>
-                </div>
-            ) : ""}
             {showAllComments &&
                 <div>
                     <div className="w-full h-20 p-2 rounded-xl bg-gray-100 flex flex-col justify-between my-2">
-                        <input className="w-full bg-transparent outline-0" placeholder={`comment as ${userData.name}`}></input>
+                        <input value={body || ""} onChange={(e) => setBody(e.target.value)} className="w-full bg-transparent outline-0" placeholder={`comment as ${userData.name}`}></input>
                         <div className="flex justify-between  items-end ">
                             <div className=" flex items-center gap-5">
                                 <label
-                                    htmlFor="file"
+                                    htmlFor={`file-${post.id}`}
                                     className={`cursor-pointer flex gap-1   items-center`}
                                 >
                                     <svg
@@ -249,56 +261,17 @@ function PostFoter({ post, userData, onOpen }) {
                                 </label>
                                 <input
                                     onChange={handelImage}
-                                    id="file"
+                                    id={`file-${post.id}`}
                                     className=" border-1 hidden"
                                     type="file"
                                 />
-
-                                <div className="relative flex items-center gap-1">
-                                    <div
-                                        onClick={() => setOpenEmojiForm(!openEmojiForm)}
-                                        className="cursor-pointer flex items-center gap-1"
-                                    >
-                                        {/* icon */}
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={1.5}
-                                            stroke="currentColor"
-                                            className="size-6 text-yellow-600"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z"
-                                            />
-                                        </svg>
-
-
-                                    </div>
-
-                                    {openEmojiForm && (
-                                        <div className="absolute top-7 left-0 z-50 shadow-lg">
-                                            <EmojiPicker
-                                                emojiStyle="google"
-                                                width={300}
-                                                height={350}
-                                                onEmojiClick={(emojiObject) =>
-                                                    setBody((prev) => prev + emojiObject.emoji)
-                                                }
-                                            />
-                                        </div>
-                                    )}
-                                </div>
                             </div>
 
                             <Button
                                 radius="md"
                                 disabled={!(body || image)}
                                 isLoading={loding}
-                                type="submit"
-                                
+                                onClick={commentForUpdate ? UpdateCommint : createComment}
                                 className=" font-bold w-10  shadow-2xs  size-7"
                             >
 
@@ -319,19 +292,29 @@ function PostFoter({ post, userData, onOpen }) {
                             </Button>
                         </div>
                     </div>
+                    {imageUrl &&
+                        <div className=" relative w-fit">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" onClick={() => {
+                                setimage(null)
+                                setimageUrl(null)
+                            }} className="size-6 text-black  absolute top-1 right-1 active:text-gray-700">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
 
-                    {commentsLoding && comments.length === 0 ?
+                            <img src={imageUrl} className=" rounded-md w-40" alt="" />
+                        </div>
+                    }
+
+                    {isLoading ?
                         < CommentLoadingScrean />
                         :
 
-                        comments.length === 0 ?
+                        data.data.comments.length === 0 ?
                             <h2 className=" my-4 text-center">there is no comments</h2>
                             :
-                            comments.map((comment) =>
-                                <CreatePostComment comment={comment} post={post} />
+                            data.data.comments.map((comment) =>
+                                <CreatePostComment commentForUpdate={commentForUpdate} setCommentForUpdate={setCommentForUpdate} key={comment._id} comment={comment} post={post} />
                             )
-
-
                     }
 
                 </div>

@@ -1,16 +1,8 @@
 
 import { useContext } from "react";
 import AuthenticationCntext from "../../../Context/AuthenticationCntext";
-import CreatePostComment from "../CreatePostComment";
 import { Button, Input } from "@heroui/react";
-import { createCommentApi } from "../../../Services/CommentServices";
 import { useState } from "react";
-import { getCommentsApi } from "../../../Services/CommentServices";
-import { UpdateCommentApi } from "../../../Services/CommentServices";
-import { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { DeleteCommentApi } from "../../../Services/CommentServices";
-
 import { queryClient } from "../../../App";
 import PostLoadingScrean from "../../PostLoadingScrean";
 import { SharePost } from "../../../Services/postServices";
@@ -54,62 +46,12 @@ function CreatPostCard({ post, setPostForUpdating, queryKey }) {
 
 
 
-  const [loding, setLodeng] = useState(false);
 
-
-
-  const [isUpdatingComment, setIsUpdatingComment] = useState(false);
   const [deleteloding, setDeleteLodeng] = useState(false);
-  const [CommentDeleteloding, setCommentDeleteLodeng] = useState(false);
 
-  function reverseComments() {
-    let reversedComment = structuredClone(comments);
-    reversedComment.reverse();
-    setComments(reversedComment);
-  }
 
-  async function createComment(e) {
-    e.preventDefault();
-    setLodeng(true);
 
-    const response = await createCommentApi(commentContent, post.id);
-    if (response.message == "success") {
-      setComments(response.comments);
-      setCommentContent("");
-    }
-    setLodeng(false);
-  }
 
-  function setCommentForUpdate(contente, id) {
-    setIsUpdatingComment(id);
-    setCommentContent(contente);
-  }
-
-  async function updateComment(e) {
-    e.preventDefault();
-    setLodeng(true);
-    const respons = await UpdateCommentApi(commentContent, isUpdatingComment);
-    if (respons.message == "success") {
-      const newcomments = await getCommentsApi(respons.comment.post);
-      setComments(newcomments.comments);
-    }
-    setIsUpdatingComment(false);
-    setCommentContent("");
-    setLodeng(false);
-  }
-
-  async function deleteComment(commentId, postId) {
-    setCommentDeleteLodeng(commentId);
-    setIsUpdatingComment(false);
-    setCommentContent("");
-    const respons = await DeleteCommentApi(commentId);
-
-    if (respons.message == "success") {
-      const newcomments = await getCommentsApi(postId);
-      setComments(newcomments.comments);
-    }
-    setCommentDeleteLodeng(false);
-  }
 
   // -----------------------------------------
 

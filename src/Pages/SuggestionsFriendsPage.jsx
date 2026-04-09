@@ -1,0 +1,64 @@
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { GetFollowSuggestions } from "../Services/FriendsServices";
+import { Input } from "@heroui/react";
+import CreateUserCard from "../Components/CreateUserCard";
+import { Button } from "@heroui/react";
+import CommentLoadingScrean from "../Components/CommentLoadingScrean";
+function SuggestionsFriendsPage() {
+  const { data,
+    fetchNextPage,
+    isLoading,
+    hasNextPage,
+    isFetchingNextPage } = useInfiniteQuery({
+      queryKey: ["SuggestionsFriends"],
+      queryFn: GetFollowSuggestions,
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) =>
+        lastPage.meta.pagination.nextPage ?? undefined,
+      staleTime: 1000 * 60,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    })
+
+  return (
+
+
+    <div className=" py-5 mt-4 px-3 rounded-xl bg-white shadow-2xl">
+      <div className=" flex gap-2 items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-blue-600">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+        </svg>
+        <h1 className=" text-xl font-bold">All Suggested Friends</h1>
+      </div>
+      <Input className=" mt-3 border border-blue-100 rounded-xl" placeholder="Search by name or username ... " />
+
+      {isLoading ?
+        <div className=" mt-6 grid grid-cols-1 gap-3 md:grid-cols-2" >
+          <CommentLoadingScrean />
+          <CommentLoadingScrean />
+          <CommentLoadingScrean />
+          <CommentLoadingScrean />
+        </div>
+        :
+
+
+        <div className=" mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+          {data.pages.map(page =>
+            page.data.suggestions.map(user =>
+              <CreateUserCard key={user._id} user={user} />
+            )
+          )}
+
+        </div>
+
+
+      }
+
+      <Button isLoading={isFetchingNextPage || isLoading} disabled={isFetchingNextPage || !hasNextPage} onPress={fetchNextPage} className=" w-full mt-3" size="md">Load more users</Button>
+
+
+    </div>
+  )
+}
+
+export default SuggestionsFriendsPage

@@ -1,4 +1,3 @@
-
 import { useContext } from "react";
 import AuthenticationCntext from "../../../Context/AuthenticationCntext";
 import { Button, Input } from "@heroui/react";
@@ -7,7 +6,6 @@ import { queryClient } from "../../../App";
 import PostLoadingScrean from "../../PostLoadingScrean";
 import { SharePost } from "../../../Services/postServices";
 import { Spinner } from "@heroui/react";
-
 
 import {
   Modal,
@@ -22,20 +20,19 @@ import PostHeader from "./PostHeader";
 import PostBody from "./PostBody";
 import PostFoter from "./PostFoter";
 
-function CreatPostCard({ post, setPostForUpdating, queryKey }) {
+function CreatPostCard({ post, setPostForUpdating, queryKey, showAllImage }) {
 
- const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  // share post
-
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [shareContent, SetShareContent] = useState("");
   const [shareLodin, SetShareLodin] = useState("");
-
+  const [deleteloding, setDeleteLodeng] = useState(false);
+  const { userData } = useContext(AuthenticationCntext);
+  const [bookmarkedIt, setBookmarkedIt] = useState(post.bookmarked);
 
   async function SendSharePost() {
     SetShareLodin(true)
     const respons = await SharePost(post.id, { "body": shareContent })
-    if(respons.success){
+    if (respons.success) {
       onOpenChange(false)
       await queryClient.invalidateQueries([queryKey]);
     }
@@ -44,28 +41,6 @@ function CreatPostCard({ post, setPostForUpdating, queryKey }) {
 
   }
 
-
-
-
-  const [deleteloding, setDeleteLodeng] = useState(false);
-
-
-
-
-
-  // -----------------------------------------
-
-
-  const { userData } = useContext(AuthenticationCntext);
-
-  const [bookmarkedIt, setBookmarkedIt] = useState(post.bookmarked);
-
- 
-
-
-
-  // -----------------------------------------
-
   return (
     <>
       {deleteloding ? (
@@ -73,7 +48,7 @@ function CreatPostCard({ post, setPostForUpdating, queryKey }) {
       ) : (
         <div className="bg-white border-1 border-blue-50 w-full rounded-xl shadow-md h-auto py-3 px-3 my-5">
           <PostHeader queryKey={queryKey} userData={userData} post={post} bookmarkedIt={bookmarkedIt} setBookmarkedIt={setBookmarkedIt} setDeleteLodeng={setDeleteLodeng} setPostForUpdating={setPostForUpdating} />
-          <PostBody post={post} />
+          <PostBody post={post} userData={userData} showAllImage={showAllImage} />
           <PostFoter post={post} userData={userData} onOpen={onOpen} />
 
         </div>

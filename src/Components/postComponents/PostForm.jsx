@@ -131,7 +131,7 @@ function PostForm({ postForUpdating, queryKey }) {
         <div className=" flex items-center gap-2 mb-3">
           <img
             src={userData?.photo ? userData?.photo : defaultPersonPhoto}
-            className=" w-12 h-12 rounded-full cursor-pointer "
+            className=" w-12 h-12 rounded-full cursor-pointer object-cover "
             alt="person-photo"
             onClick={(e) => {
               e.stopPropagation();

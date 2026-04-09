@@ -48,7 +48,7 @@ function PostHeader({ userData, post, bookmarkedIt , setBookmarkedIt , setDelete
       >
         <div className="flex">
           <img
-            className=" rounded-full w-10 h-10 mr-3"
+            className=" rounded-full w-10 h-10 mr-3 object-cover"
             src={post.user.photo}
             alt={post.user.name}
           />

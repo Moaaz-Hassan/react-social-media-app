@@ -127,8 +127,4 @@ export async function GetPostComments(postId) {
 }
 
 
-// GET
-// 
-// https://route-posts.routemisr.com/posts//comments?page=1&limit=10
-
 

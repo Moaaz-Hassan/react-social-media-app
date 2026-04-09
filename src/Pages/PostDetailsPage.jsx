@@ -1,39 +1,34 @@
-import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { getPost } from "../Services/postServices";
 import PostLoadingScrean from "../Components/PostLoadingScrean";
 import CreatPostCard from "../Components/postComponents/CreatePost/CreatePostCard";
 
 function PostDetailsPage() {
-  const { id } = useParams();
-  const [postDetails, setPostDetails] = useState();
-  const [loding, setLoding] = useState(true);
+  const { id } = useParams()
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["fitchPostDetails", id],
+    queryFn: () => getPost(id)
+  })
 
-  async function getPostDetails() {
-    const response = await getPost(id);
 
-    if (response.message == "success") {
-      setPostDetails(response.post);
-    }
-
-    setLoding(false);
+  if (isError) {
+    return (
+      <div className=" flex items-center justify-center">
+        <h2 className=" text-medium font-medium text-red-600">
+          An error occurred, please try again.{" "}
+        </h2>
+      </div>
+    );
   }
 
-  useEffect(() => {
-    getPostDetails();
-  }, []);
-
   return (
-    <>
-      {loding ? (
-        <PostLoadingScrean />
-      ) : (
-        <div className=" pt-3">
-          <CreatPostCard post={postDetails} isFullView={true} />
-        </div>
-      )}
-    </>
-  );
+    <div>
+      {isLoading ? <PostLoadingScrean /> :
+        <CreatPostCard showAllImage={true} queryKey={["fitchPostDetails", id]} post={data?.data?.post} />
+      }
+    </div>
+  )
 }
 
-export default PostDetailsPage;
+export default PostDetailsPage

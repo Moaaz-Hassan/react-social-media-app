@@ -24,11 +24,7 @@ export async function UpdateCommentApi(content, commintId, postId) {
   }
 }
 
-// 
 
-
-
-// done
 export async function DeleteCommentApi(commintId, postId) {
   try {
     const { data } = await axiosInstance.delete(`/posts/${postId}/comments/${commintId}`,);

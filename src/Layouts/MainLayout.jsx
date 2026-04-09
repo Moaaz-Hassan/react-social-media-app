@@ -6,24 +6,33 @@ import AuthenticationCntext from "../Context/AuthenticationCntext";
 import { Navigate } from "react-router-dom";
 
 function MainLayout() {
-  let { userData , isLogedIn } = useContext(AuthenticationCntext);
+  let { userData, isLogedIn } = useContext(AuthenticationCntext);
   return (
-    <div>
-      {/* {userData ? ( */}
+    <>
+      {isLogedIn ?
         <div>
-          <NavBar />
-          <div className=" mt-[80px] pt-2 lg:w-[65%]  w-[95%] md:w-[85%]  mx-auto">
-            <Outlet />
+          <div>
+            <NavBar />
+            {userData ?
+              <div className=" mt-[80px] pt-2 lg:w-[65%]  w-[95%] md:w-[85%]  mx-auto">
+                <Outlet />
+              </div>
+              : <OpenScrean />
+            }
+
           </div>
         </div>
-      {/* ) : (
-        isLogedIn ? <OpenScrean /> :  <Navigate to={"/login"} />  */}
-      {/* )} */}
-    </div>
+
+
+
+        : <Navigate to={"/login"} />
+      }
+    </>
   );
 }
 
 export default MainLayout;
+
 
 
 

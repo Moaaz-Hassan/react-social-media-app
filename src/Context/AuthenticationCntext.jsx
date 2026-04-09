@@ -1,6 +1,7 @@
-import  { useState, useEffect } from "react";
+import { useState } from "react";
 import { createContext } from "react";
 import { getLogedUserData } from "../Services/loginServices";
+import { useQuery } from "@tanstack/react-query";
 
 const AuthenticationCntext = createContext();
 
@@ -8,24 +9,20 @@ export function AuthenticationCntextProvider({ children }) {
   const [isLogedIn, setIsLogedIn] = useState(
     localStorage.getItem("token") != null,
   );
-  const [userData, setuserData] =  useState();
 
-  async function getData() {
-    const response = await getLogedUserData();
-    if (response.success ==  true) {
-      setuserData(response.data.user);
-    }
-  }
 
-  useEffect(() => {
-    if (isLogedIn) {
-      getData();
-    }
-  }, [isLogedIn]);
+  const { data: userData } = useQuery({
+    queryKey: ["getUserData"],
+    queryFn: getLogedUserData ,
+    enabled: isLogedIn ,
+    select: (data) => data.data.user
+  })
+
+
 
   return (
     <AuthenticationCntext.Provider
-      value={{ isLogedIn, setIsLogedIn, userData, setuserData }}
+      value={{ isLogedIn, setIsLogedIn, userData }}
     >
       {children}
     </AuthenticationCntext.Provider>

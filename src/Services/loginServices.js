@@ -22,6 +22,8 @@ export async function getLogedUserData() {
   }
 }
 
+
+// ned to change 
 export async function changePassWord(newPassword) {
   try {
     const { data } = await axios.patch(

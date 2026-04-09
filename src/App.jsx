@@ -29,7 +29,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthenticationCntextProvider } from "./Context/AuthenticationCntext";
 import { HeroUIProvider } from "@heroui/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { path } from "framer-motion/client";
+
 
 export const queryClient = new QueryClient();
 
@@ -155,11 +155,11 @@ function App() {
   return (
     <div className=" bg-gray-50 min-h-screen">
       <HeroUIProvider>
-        <AuthenticationCntextProvider>
-          <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <AuthenticationCntextProvider>
             <RouterProvider router={routers}></RouterProvider>
-          </QueryClientProvider>
-        </AuthenticationCntextProvider>
+          </AuthenticationCntextProvider>
+        </QueryClientProvider>
       </HeroUIProvider>
     </div>
   );

@@ -12,11 +12,7 @@ function Feed() {
     rootMargin: "500px",
   });
 
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [inView]);
+
 
   const {
     data,
@@ -35,6 +31,12 @@ function Feed() {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
+
+    useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView]);
 
   if (isError) {
     return (

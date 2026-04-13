@@ -53,7 +53,7 @@ function RegisterPage() {
 
       if (response.success) {
         localStorage.setItem("token", response.data.token);
-        setIsLogedIn(response.data.token);
+        setIsLogedIn(true);
         navigate("/");
       } else {
         setApiError(response.message);

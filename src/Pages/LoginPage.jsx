@@ -38,7 +38,7 @@ function LoginPage() {
         return;
       } else {
         localStorage.setItem("token", response.data.token);
-        setIsLogedIn(response.data.token);
+        setIsLogedIn(true);
         navigate("/");
       }
     } catch (error) {

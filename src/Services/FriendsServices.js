@@ -15,3 +15,10 @@ export async function ToggelFollow(id) {
     return data
     
 }
+
+export async function GetUserProfile(id) {
+    const {data} = await axiosInstance.get(`/users/${id}/profile`)
+    return data
+    
+}
+

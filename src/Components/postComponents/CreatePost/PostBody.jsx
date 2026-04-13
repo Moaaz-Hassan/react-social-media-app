@@ -33,7 +33,7 @@ function PostBody({ post, showAllImage, userData }) {
         {post.isShare && (
           <div className=" m-1 rounded-md border border-gray-300 bg-gray-100">
             <div className="w-full h-16 flex items-center justify-between p-2 ">
-              <Link to={`/user-profile/${post?.user?._id}`}>
+              <Link to={userData?._id === post?.sharedPost?.user?._id ? "/profile" : `/user-profile/${post?.sharedPost?.user?._id}`}>
                 <div className="flex items-center">
                   <img
                     className=" rounded-full w-9 h-9 mr-2"

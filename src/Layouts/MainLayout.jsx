@@ -22,9 +22,6 @@ function MainLayout() {
 
           </div>
         </div>
-
-
-
         : <Navigate to={"/login"} />
       }
     </>

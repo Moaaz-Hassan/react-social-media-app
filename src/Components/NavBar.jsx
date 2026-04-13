@@ -135,7 +135,7 @@ function NavBar() {
           <div className=" flex items-center gap-4 md:gap-2 rounded-3xl p-2 bg-gray-100  cursor-pointer ">
             <img
               src={userData?.photo ? userData?.photo : defaultPersonPhoto}
-              className=" w-10 h-10 rounded-full "
+              className=" w-10 h-10 rounded-full object-cover "
               alt="person-photo"
               onClick={(e) => {
                 e.stopPropagation();

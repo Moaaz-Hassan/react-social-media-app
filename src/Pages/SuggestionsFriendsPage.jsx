@@ -1,6 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { GetFollowSuggestions } from "../Services/FriendsServices";
-import { Input } from "@heroui/react";
 import CreateUserCard from "../Components/CreateUserCard";
 import { Button } from "@heroui/react";
 import CommentLoadingScrean from "../Components/CommentLoadingScrean";
@@ -30,7 +29,6 @@ function SuggestionsFriendsPage() {
         </svg>
         <h1 className=" text-xl font-bold">All Suggested Friends</h1>
       </div>
-      <Input className=" mt-3 border border-blue-100 rounded-xl" placeholder="Search by name or username ... " />
 
       {isLoading ?
         <div className=" mt-6 grid grid-cols-1 gap-3 md:grid-cols-2" >

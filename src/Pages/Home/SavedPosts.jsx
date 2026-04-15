@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 
 export default function SavedPosts() {
-  const { setPostForUpdating , queryKeyes } = useOutletContext();
+  const { setPostForUpdating, queryKeyes } = useOutletContext();
   const { ref, inView } = useInView({
     rootMargin: "500px",
   });
@@ -49,19 +49,23 @@ export default function SavedPosts() {
 
   return (
     <div>
-      {data?.pages?.map((page) =>
-        page.data.bookmarks.map(
-          (post) =>
-            post && (
-              <CreatPostCard
-                key={post._id}
-                post={post}
-                setPostForUpdating={setPostForUpdating}
-                queryKey={["fetchBookmarksPostes"]}
-              />
+      {
+        data?.pages[0].data.bookmarks.length === 0 ?
+          <h2 className=" text-sm font-bold text-gray-800 my-4 text-center"> You haven't Saved any posted yet.</h2>
+          :
+          data?.pages?.map((page) =>
+            page.data.bookmarks.map(
+              (post) =>
+                post && (
+                  <CreatPostCard
+                    key={post._id}
+                    post={post}
+                    setPostForUpdating={setPostForUpdating}
+                    queryKey={["fetchBookmarksPostes"]}
+                  />
+                ),
             ),
-        ),
-      )}
+          )}
 
       <div ref={ref} className="flex justify-center items-center mt-4">
         {isFetching && <PostLoadingScrean />}

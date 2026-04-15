@@ -13,7 +13,7 @@ import { togeleBookmarkPostes } from "../../../Services/postServices";
 import { deletPost } from "../../../Services/postServices";
 import { queryClient } from "../../../App";
 
-function PostHeader({ userData, post, bookmarkedIt , setBookmarkedIt , setDeleteLodeng , setPostForUpdating , queryKey }) {
+function PostHeader({ userData, post, bookmarkedIt , setBookmarkedIt , setDeleteLodeng , setPostForUpdating , queryKey , showAllImage }) {
   
   async function deletYourPost() {
     setDeleteLodeng(true);
@@ -109,7 +109,7 @@ function PostHeader({ userData, post, bookmarkedIt , setBookmarkedIt , setDelete
             </DropdownItem>
           )}
 
-          {post.user._id == userData._id && (
+          {post.user._id == userData._id && !showAllImage && (
             <>
               <DropdownItem
                 key="edit"

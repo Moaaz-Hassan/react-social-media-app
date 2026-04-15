@@ -10,7 +10,7 @@ import AuthenticationCntext from "../../Context/AuthenticationCntext";
 
 function MyPosts() {
   let { userData } = useContext(AuthenticationCntext);
-  const { setPostForUpdating , queryKeyes } = useOutletContext();
+  const { setPostForUpdating, queryKeyes } = useOutletContext();
   const { ref, inView } = useInView({
     rootMargin: "500px",
   });
@@ -21,7 +21,7 @@ function MyPosts() {
     }
   }, [inView]);
 
-  
+
 
   const {
     data,
@@ -58,19 +58,23 @@ function MyPosts() {
 
   return (
     <div>
-      {data?.pages?.map((page) =>
-        page.data.posts.map(
-          (post) =>
-            post && (
-              <CreatPostCard
-                key={post._id}
-                post={post}
-                setPostForUpdating={setPostForUpdating}
-                queryKey={[queryKeyes]}
-              />
+      {
+        data?.pages[0].data.posts.length === 0 ?
+          <h2 className=" text-sm font-bold text-gray-800 my-4 text-center"> You have not posted yet.</h2>
+          :
+          data?.pages?.map((page) =>
+            page.data.posts.map(
+              (post) =>
+                post && (
+                  <CreatPostCard
+                    key={post._id}
+                    post={post}
+                    setPostForUpdating={setPostForUpdating}
+                    queryKey={[queryKeyes]}
+                  />
+                ),
             ),
-        ),
-      )}
+          )}
 
       <div ref={ref} className="flex justify-center items-center mt-4">
         {isFetching && <PostLoadingScrean />}

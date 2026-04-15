@@ -1,31 +1,90 @@
 import { Link } from "react-router-dom";
 import { timeAgo } from "../Services/timeFormat";
-import { Button } from "@heroui/react";
+import { Button, spinner } from "@heroui/react";
+import { MarkNotificationAsRead } from "../Services/NotificationServices";
+import { useState } from "react";
+import { Spinner } from "@heroui/react";
+import { queryClient } from "../App";
 
 
 function CreateNotificationCard({ notification }) {
+
+    const [loding, setLoding] = useState(false);
+    const [readed, setreaded] = useState(false);
+
+
+    async function marAsRead() {
+        setLoding(true)
+        const { data } = await MarkNotificationAsRead(notification._id)
+        console.log(data)
+        if (data.notification) {
+            setreaded(true)
+            await queryClient.invalidateQueries(["getNotification", true])
+
+        }
+        setLoding(false)
+
+    }
+
     return (
-        <div className={` p-4 rounded-xl border border-gray-300 flex justify-between items-start mt-2 ${!notification.isRead && " bg-blue-300/30"}`}>
-            <div>
-                <Link to={`/user-profile/${notification.actor._id}`} className="  flex items-center gap-2 w-fit">
-                    <img className=" w-16 object-cover h-16 rounded-full " src={notification.actor.photo} alt="" />
-                    <div>
-                        <h2 className=" text-medium font-medium">{notification.actor.name}</h2>
-                        <h2 className=" text-sm font-light text-gray-500">{timeAgo(notification.createdAt)}</h2>
+        <>
+            {readed ? <div className=" hidden"></div> :<div className={` p-4 rounded-xl border border-gray-300 flex justify-between items-start mt-2 ${!notification.isRead && " bg-blue-300/30"}`}>
+                <div>
+                    <Link to={`/user-profile/${notification.actor._id}`} className="  flex items-center gap-2 w-fit">
+                        <img className=" w-16 object-cover h-16 rounded-full " src={notification.actor.photo} alt="" />
+                        <div>
+                            <h2 className=" text-medium font-medium">{notification.actor.name}</h2>
+                            <h2 className=" text-sm font-light text-gray-500">{timeAgo(notification.createdAt)}</h2>
+                        </div>
+                    </Link>
+                    <div className=" text-gray-900 text-sm mt-2">
+                        {notification.type === "like_post"
+                            ?
+                            (
+                                <>
+                                    liked your post {" "}
+                                    <Link to={`/single-Post/${notification.entity._id}`} className="font-bold">
+                                        {notification.entity.body}
+                                    </Link>
+                                </>
+                            )
+                            : notification.type === "follow_user"
+                                ? `started following you`
+                                : notification.type === "comment_post"
+                                    ? (
+                                        <>
+                                            commented on your post {" "}
+                                            <Link to={`/single-Post/${notification.entity._id}`} className="font-bold">
+                                                {notification.entity.body}
+                                            </Link>
+                                        </>
+                                    )
+                                    : notification.type === "share_post" ? (
+                                        <>
+                                            shared your post{" "}
+                                            <Link to={`/single-Post/${notification.entity._id}`} className="font-bold">
+                                                {notification.entity.body}
+                                            </Link>
+                                        </>
+                                    ) : notification.type}
                     </div>
-                </Link>
-                {/* the body here  */}
 
-            </div>
+                </div>
 
-            {!notification.isRead && <Button size="sm" color="primary" ><div className=" flex gap-0.5"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-            </svg>
-                Mark as read
-            </div>
-            </Button>}
+                {!notification.isRead &&
+                    <Button className=" w-25" onPress={marAsRead} size="sm" color="primary" >
+                        {loding ?
+                            <Spinner color="white" size="sm" />
+                            : <div className=" flex gap-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                </svg>
+                                Mark as read
+                            </div>}
+                    </Button>}
 
-        </div>
+            </div> }
+        </>
     )
 }
 

@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 
 function Feed() {
-  const { setPostForUpdating , queryKeyes } = useOutletContext();
+  const { setPostForUpdating, queryKeyes } = useOutletContext();
   const { ref, inView } = useInView({
     rootMargin: "500px",
   });
@@ -32,7 +32,7 @@ function Feed() {
     refetchOnMount: false,
   });
 
-    useEffect(() => {
+  useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
@@ -50,19 +50,23 @@ function Feed() {
 
   return (
     <div>
-      {data?.pages?.map((page) =>
-        page.data.posts.map(
-          (post) =>
-            post && (
-              <CreatPostCard
-                key={post._id}
-                post={post}
-                setPostForUpdating={setPostForUpdating}
-                queryKey={[queryKeyes]}
-              />
+      {
+        data?.pages[0].data.posts.length === 0 ?
+          <h2 className=" text-sm font-bold text-gray-800 my-4 text-center"> You have not posted yet.</h2>
+          :
+          data?.pages?.map((page) =>
+            page.data.posts.map(
+              (post) =>
+                post && (
+                  <CreatPostCard
+                    key={post._id}
+                    post={post}
+                    setPostForUpdating={setPostForUpdating}
+                    queryKey={[queryKeyes]}
+                  />
+                ),
             ),
-        ),
-      )}
+          )}
 
       <div ref={ref} className="flex justify-center items-center mt-4">
         {isFetching && <PostLoadingScrean />}

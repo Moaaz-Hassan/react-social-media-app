@@ -47,7 +47,7 @@ function CreatPostCard({ post, setPostForUpdating, queryKey, showAllImage }) {
         <PostLoadingScrean />
       ) : (
         <div className="bg-white border-1 border-blue-50 w-full rounded-xl shadow-md h-auto py-3 px-3 my-5">
-          <PostHeader queryKey={queryKey} userData={userData} post={post} bookmarkedIt={bookmarkedIt} setBookmarkedIt={setBookmarkedIt} setDeleteLodeng={setDeleteLodeng} setPostForUpdating={setPostForUpdating} />
+          <PostHeader showAllImage={showAllImage} queryKey={queryKey} userData={userData} post={post} bookmarkedIt={bookmarkedIt} setBookmarkedIt={setBookmarkedIt} setDeleteLodeng={setDeleteLodeng} setPostForUpdating={setPostForUpdating} />
           <PostBody post={post} userData={userData} showAllImage={showAllImage} />
           <PostFoter post={post} userData={userData} onOpen={onOpen} />
 

@@ -148,7 +148,9 @@ function ProfilePage() {
         <PostLoadingScrean />
       ) : (
         <div>
-          {data?.pages?.map((page) =>
+          {data?.pages[0].data.posts.length === 0 ?
+          <h2 className=" text-sm font-bold text-gray-800 my-4 text-center"> You have not posted yet.</h2>
+          :  data?.pages?.map((page) =>
             page.data.posts.map(
               (post) =>
                 post && (

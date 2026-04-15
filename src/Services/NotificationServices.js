@@ -6,3 +6,14 @@ export async function GetNotifications({ pageParam = 1, unread }) {
 
 }
 
+export async function MarkNotificationAsRead(notification) {
+    const { data } = await axiosInstance.patch(`/notifications/${notification}/read`)
+    return data
+
+}
+
+export async function MarkAllAsRead() {
+    const { data } = await axiosInstance.patch(`/notifications/read-all`)
+    return data
+
+}

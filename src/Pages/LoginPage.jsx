@@ -39,7 +39,6 @@ function LoginPage() {
       } else {
         localStorage.setItem("token", response.data.token);
         setIsLogedIn(true);
-        navigate("/");
       }
     } catch (error) {
       setApiErorre("Something went wrong. Please try again later.");

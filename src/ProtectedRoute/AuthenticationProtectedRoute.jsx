@@ -5,7 +5,7 @@ import AuthenticationCntext from '../Context/AuthenticationCntext'
 
 function AuthenticationProtectedRoute({children}) {
     const {isLogedIn } =  useContext(AuthenticationCntext)
-    return  isLogedIn ? <Navigate to={"/"}/> :  children 
+    return  isLogedIn ? <Navigate to={"/community"}/> :  children 
 
 
 }

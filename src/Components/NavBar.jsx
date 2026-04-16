@@ -34,9 +34,10 @@ function NavBar() {
   const navigate = useNavigate();
 
   function logOut() {
-    localStorage.removeItem("token");
+    localStorage.removeItem("loop_socialmediaApp_token");
     setIsLogedIn(false);
   }
+
 
   useEffect(() => {
     const handleScroll = () => {

@@ -7,7 +7,7 @@ const AuthenticationCntext = createContext();
 
 export function AuthenticationCntextProvider({ children }) {
   const [isLogedIn, setIsLogedIn] = useState(
-    localStorage.getItem("token") != null,
+    localStorage.getItem("loop_socialmediaApp_token") != null,
   );
 
 

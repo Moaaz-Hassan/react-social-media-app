@@ -26,11 +26,8 @@ export async function getLogedUserData() {
 // ned to change 
 export async function changePassWord(newPassword) {
   try {
-    const { data } = await axios.patch(
-      "https://linked-posts.routemisr.com/users/change-password",
-      newPassword,
-      { headers: { token: localStorage.getItem("token") } },
-    );
+    const { data } = await axiosInstance.patch(
+      "/users/change-password",newPassword);
 
     return data;
   } catch (err) {

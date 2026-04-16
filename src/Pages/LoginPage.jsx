@@ -37,7 +37,8 @@ function LoginPage() {
         setApiErorre(response.error);
         return;
       } else {
-        localStorage.setItem("token", response.data.token);
+        // loop_socialmediaApp_token
+        localStorage.setItem("loop_socialmediaApp_token", response.data.token);
         setIsLogedIn(true);
       }
     } catch (error) {

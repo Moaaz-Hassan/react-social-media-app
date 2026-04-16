@@ -30,28 +30,28 @@ function PostBody({ post, showAllImage, userData }) {
         )}
 
 
-        {post.isShare && (
+        {(post.isShare && post.sharedPost!==null) && (
           <div className=" m-1 rounded-md border border-gray-300 bg-gray-100">
             <div className="w-full h-16 flex items-center justify-between p-2 ">
               <Link to={userData?._id === post?.sharedPost?.user?._id ? "/profile" : `/user-profile/${post?.sharedPost?.user?._id}`}>
                 <div className="flex items-center">
                   <img
                     className=" rounded-full w-9 h-9 mr-2"
-                    src={post.sharedPost.user.photo}
-                    alt={post.sharedPost.user.name}
+                    src={post?.sharedPost?.user?.photo}
+                    alt={post?.sharedPost?.user?.name}
                   />
                   <div className=" flex flex-col">
                     <h3 className="text-sm font-semibold ">
-                      {post.sharedPost.user.name}
+                      {post?.sharedPost?.user?.name}
                     </h3>
                     <h3 className=" text-xs font-semibold">
-                      @{post.sharedPost.user.username}
+                      @{post?.sharedPost?.user?.username}
                     </h3>
                   </div>
                 </div>
               </Link>
               <Link
-                to={"/single-Post/" + post.sharedPost.id}
+                to={"/single-Post/" + post?.sharedPost?.id}
                 className=" text-blue-500 flex items-center gap-1 text-sm"
               >
                 <h2>Original Post</h2>
@@ -72,16 +72,16 @@ function PostBody({ post, showAllImage, userData }) {
               </Link>
             </div>
             <div className=" p-2">
-              {post.sharedPost.body && (
+              {post?.sharedPost?.body && (
                 <p className=" my-1 text-medium break-all line-clamp-2 font-semibold text-gray-800">
-                  {post.sharedPost.body}
+                  {post?.sharedPost?.body}
                 </p>
               )}
             </div>
-            {post.sharedPost.image && (
+            {post?.sharedPost?.image && (
               <img
                 className={` w-full h-[350px]  lg:h-[450px] lg:w-[90%] mx-auto object-cover rounded-md mt-1`}
-                src={post.sharedPost.image}
+                src={post?.sharedPost?.image}
               />
             )}
           </div>

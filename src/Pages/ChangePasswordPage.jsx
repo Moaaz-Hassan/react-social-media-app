@@ -7,6 +7,7 @@ import { changePassWord } from "../Services/loginServices";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChangePasswordsSchema } from "../schemaValidation/ChangePasswordValidation";
+import { queryClient } from "../App";
 
 function ChangePasswordPage() {
   const naegate = useNavigate();
@@ -25,14 +26,16 @@ function ChangePasswordPage() {
   });
 
   async function change(value) {
+
     setloding(true);
     const response = await changePassWord(value);
+    console.log(response)
 
-    if (response?.message !== "success") {
+    if (!response?.success) {
       setApiErorre(response.response.data.error);
     } else {
-      console.log(response);
-      localStorage.setItem("token", response.token);
+      localStorage.setItem("loop_socialmediaApp_token", response.data.token);
+      await queryClient.invalidateQueries(["getUserData"])
       naegate("/");
     }
 

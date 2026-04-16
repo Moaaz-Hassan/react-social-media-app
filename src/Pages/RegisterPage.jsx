@@ -52,7 +52,7 @@ function RegisterPage() {
       console.log(response);
 
       if (response.success) {
-        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("loop_socialmediaApp_token", response.data.token);
         setIsLogedIn(true);
       } else {
         setApiError(response.message);

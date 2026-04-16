@@ -16,12 +16,13 @@ import CreatPostCard from "../Components/postComponents/CreatePost/CreatePostCar
 function UsersProfilePage() {
   const { id } = useParams();
   const [loding, seLoding] = useState(false)
+  const [openimage, setOpenimage] = useState(false)
 
   async function Follow() {
     seLoding(true)
     const respons = await ToggelFollow(id)
     if (respons.success) {
-      await queryClient.invalidateQueries({ queryKey: ["getUser", id] })
+      await queryClient.invalidateQueries( ["getUser", id])
     }
 
     seLoding(false)
@@ -67,6 +68,7 @@ function UsersProfilePage() {
   }, [inView]);
 
 
+
   if (isErrorUserData) {
     return (
       <div className=" flex items-center justify-center">
@@ -77,73 +79,112 @@ function UsersProfilePage() {
     );
   }
 
-  return <div>
-    <div className=" h-30 md:h-36 mt-7 rounded-xl bg-white border border-blue-100/50 shadow-xl flex items-center justify-center p-4">
-      {isLoadingUserData ? <h2 className=" text-xl text-gray-600 font-medium">loading user profile...</h2>
-        :
-        <div className=" flex items-center justify-between w-full ">
-          <div className=" flex items-center justify-between">
-            <img className=" w-16 md:w-24 object-cover h-16 md:h-24 rounded-full " src={userData.data.user.photo} alt="" />
-            <div>
-              <h2 className=" text-medium font-medium">{userData.data.user.name}</h2>
-              <h2 className=" text-sm font-light">@{userData.data.user.username}</h2>
-            </div>
-          </div>
-          <Button onPress={Follow} color={userData.data.isFollowing ? "white" : `primary`} className={`${userData.data.isFollowing && " border-1 border-blue-500"}`}>
-            {loding ? (<Spinner color={userData.data.isFollowing ? "primary" : `white`} size="sm" />) : (
-              userData.data.isFollowing ? (
-                < div className=" flex gap-1" >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM4 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 10.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
-                  </svg>
-                  Unfollow
-                </div>)
-                :
-                (<div className=" flex gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
-                  </svg>
-                  Follow</div>))
+  return (
+    <>
+      <div>
+        <div className="  mt-7 rounded-xl bg-white border border-blue-100/50 shadow-xl flex items-center justify-center p-4">
+          {isLoadingUserData ? <h2 className=" text-xl text-gray-600 font-medium">loading user profile...</h2>
+            :
+            <div className=" flex items-center justify-between w-full ">
+              <div className=" flex items-center justify-between">
+                <img className=" w-16 md:w-24 object-cover h-16 md:h-24 rounded-full cursor-pointer " onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenimage(true)
+                }} src={userData.data.user.photo} alt="" />
+                <div>
+                  <h2 className=" text-medium font-medium">{userData.data.user.name}</h2>
+                  <h2 className=" text-sm font-light">@{userData.data.user.username}</h2>
+                </div>
+              </div>
 
-            }
-          </Button>
+              <div >
+                <div className=" grid grid-cols-2 gap-2 w-full  md:w-fit  items-center ">
+                  <div className="  border border-gray-200 rounded-xl flex items-center p-3 flex-col h-fit">
+                    <h2 className=" text-medium font-medium text-gray-500">Followers</h2>
+                    <h3 className=" text-black text-xl font-bold ">{userData.data.user.followersCount}</h3>
+                  </div>
+                  <div className="  border border-gray-200 rounded-xl flex items-center p-3 flex-col h-fit">
+                    <h2 className=" text-medium font-medium text-gray-500">Following</h2>
+                    <h3 className=" text-black text-xl font-bold ">{userData.data.user.followingCount}</h3>
+                  </div>
+                </div>
+                <Button onPress={Follow} color={userData.data.isFollowing ? "white" : `primary`} className={`${userData.data.isFollowing && " border-1 border-blue-500"} mt-2 w-full `}>
+                  {loding ? (<Spinner color={userData.data.isFollowing ? "primary" : `white`} size="sm" />) : (
+                    userData.data.isFollowing ? (
+                      < div className=" flex gap-1" >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM4 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 10.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                        </svg>
+                        Unfollow
+                      </div>)
+                      :
+                      (<div className=" flex gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                        </svg>
+                        Follow</div>))
+
+                  }
+                </Button>
+              </div>
+
+            </div>
+          }
+        </div >
+
+        <div className=" mt-4">
+          {isLoading ? (
+            <PostLoadingScrean />
+          ) : (
+            <div>
+
+              {data?.pages?.map((page) =>
+                page.data.posts.length == 0 ?
+                  <h2 className=" text-center mt-9">he hasn't posted any thing yat </h2>
+                  :
+                  page.data.posts.map(
+                    (post) =>
+                      post && (
+                        <CreatPostCard
+                          key={post._id}
+                          post={post}
+                        />
+                      ),
+                  ),
+              )}
+
+              <div ref={ref} className="flex justify-center items-center mt-4">
+                {isFetching && <PostLoadingScrean />}
+              </div>
+            </div>
+          )}
+
+        </div>
+
+
+
+      </div >
+      {openimage &&
+        <div className=" fixed top-0 left-0 right-0 bottom-0 bg-black/85 z-100 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" onClick={() => {
+            setOpenimage(false)
+          }} className="size-9 text-white  active:text-gray-40 absolute right-2 top-2 z-20">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+
+          <img
+            className={` max-h-[95%]`}
+            src={userData.data.user.photo}
+          />
+
 
         </div>
       }
-    </div >
 
-    <div className=" mt-4">
-      {isLoading ? (
-        <PostLoadingScrean />
-      ) : (
-        <div>
+    </>
+  )
 
-          {data?.pages?.map((page) =>
-            page.data.posts.length == 0 ?
-              <h2 className=" text-center mt-9">he hasn't posted any thing yat </h2>
-              :
-              page.data.posts.map(
-                (post) =>
-                  post && (
-                    <CreatPostCard
-                      key={post._id}
-                      post={post}
-                    />
-                  ),
-              ),
-          )}
-
-          <div ref={ref} className="flex justify-center items-center mt-4">
-            {isFetching && <PostLoadingScrean />}
-          </div>
-        </div>
-      )}
-
-    </div>
-
-
-
-  </div >;
+    ;
 }
 
 export default UsersProfilePage;

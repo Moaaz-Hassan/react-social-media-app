@@ -200,7 +200,7 @@ function PostForm({ postForUpdating, queryKey }) {
         )}
 
         <div className="flex justify-between mt-6 items-center border-t-1 border-gray-950 pt-3">
-          <div className=" flex items-center gap-5">
+          <div className=" flex items-center gap-2 md:gap-5">
             <label
               htmlFor="file"
               className={`cursor-pointer flex gap-1   items-center`}
